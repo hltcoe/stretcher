@@ -96,4 +96,9 @@ public class IDSortedCommunicationSource implements CommunicationSource {
   public boolean exists(String id) {
     return this.impl.containsKey(id);
   }
+
+  @Override
+  public int size() {
+    return this.impl.size();
+  }
 }

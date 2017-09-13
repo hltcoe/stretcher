@@ -38,4 +38,10 @@ public interface CommunicationSource {
    * @return
    */
   public List<Communication> get(List<String> ids);
+
+  /**
+   *
+   * @return
+   */
+  public int size();
 }

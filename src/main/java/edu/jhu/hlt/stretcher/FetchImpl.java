@@ -5,8 +5,6 @@ import java.util.stream.Collectors;
 
 import org.apache.thrift.TException;
 
-import com.google.common.collect.ImmutableList;
-
 import edu.jhu.hlt.concrete.Communication;
 import edu.jhu.hlt.concrete.access.FetchCommunicationService;
 import edu.jhu.hlt.concrete.access.FetchRequest;
@@ -14,19 +12,15 @@ import edu.jhu.hlt.concrete.access.FetchResult;
 import edu.jhu.hlt.concrete.services.NotImplementedException;
 import edu.jhu.hlt.concrete.services.ServiceInfo;
 import edu.jhu.hlt.concrete.services.ServicesException;
-import edu.jhu.hlt.stretcher.source.CommunicationSource;
+import edu.jhu.hlt.stretcher.manager.Manager;
 
 public class FetchImpl implements FetchCommunicationService.Iface {
 
-  private final List<CommunicationSource> commSrc;
-
-  private int size = -1;
+  private final Manager mgr;
 
   // can imagine where you want >1 src
-  public FetchImpl(Iterable<CommunicationSource> srces) {
-    this.commSrc = ImmutableList.copyOf(srces);
-    if (this.commSrc.isEmpty())
-      throw new IllegalArgumentException("need >0 sources");
+  public FetchImpl(Manager mgr) {
+    this.mgr = mgr;
   }
 
   @Override
@@ -44,34 +38,19 @@ public class FetchImpl implements FetchCommunicationService.Iface {
     // req comm list
     FetchResult res = new FetchResult();
 
-    // use first source only
-    CommunicationSource target = this.commSrc.get(0);
-
     // just do comm IDs
-    // these are string IDs.. ?
-    for (String cid : arg0.getCommunicationIds()) {
-      target.get(cid).ifPresent(res::addToCommunications);
-    }
-
+    this.mgr.get(arg0.getCommunicationIds()).forEach(res::addToCommunications);
     return res;
   }
 
   @Override
   public long getCommunicationCount() throws NotImplementedException, TException {
-    // this is tricky if there's a stream powering the source
-    // wastefully/cleverly cache the amt of comms
-    // or maybe just throw if the sources are unbound
-    if (size == -1) {
-      // iterate over all the first source's comms
-      size = this.commSrc.get(0).get(0, Long.MAX_VALUE).size();
-    }
-
-    return size;
+    return this.mgr.size();
   }
 
   @Override
   public List<String> getCommunicationIDs(long offset, long limit) throws NotImplementedException, TException {
-    return this.commSrc.get(0).get(offset, limit)
+    return this.mgr.get(offset, limit)
         .stream()
         .map(Communication::getId)
         .collect(Collectors.toList());

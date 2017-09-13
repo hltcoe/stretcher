@@ -12,7 +12,7 @@ import edu.jhu.hlt.stretcher.manager.Manager;
 
 public class StoreImpl implements StoreCommunicationService.Iface {
 
-  Manager mgr;
+  private final Manager mgr;
 
   public StoreImpl(Manager mgr) {
     this.mgr = mgr;
@@ -32,7 +32,5 @@ public class StoreImpl implements StoreCommunicationService.Iface {
   public void store(Communication arg0) throws ServicesException, TException {
     // pass the buck
     this.mgr.update(arg0);
-    // store after each attempt
-    this.mgr.persist();
   }
 }

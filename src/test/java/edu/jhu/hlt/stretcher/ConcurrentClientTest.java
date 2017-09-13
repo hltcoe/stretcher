@@ -17,6 +17,7 @@ import com.google.common.collect.ImmutableList;
 
 import edu.jhu.hlt.concrete.AnnotationMetadata;
 import edu.jhu.hlt.concrete.Communication;
+import edu.jhu.hlt.concrete.access.StoreCommunicationService;
 import edu.jhu.hlt.concrete.metadata.AnnotationMetadataFactory;
 import edu.jhu.hlt.concrete.services.store.StoreServiceWrapper;
 import edu.jhu.hlt.concrete.services.store.StoreTool;
@@ -40,9 +41,9 @@ public class ConcurrentClientTest {
 
     Runnable backendRunnable = () -> {
       // use PrintingPersister to get access to the stored comms method
-      try(PrintingPersister backend = new PrintingPersister();) {
-        Manager mgr = new LockingManager(backend);
-        StoreImpl impl = new StoreImpl(mgr);
+      try(PrintingPersister backend = new PrintingPersister();
+          Manager mgr = new LockingManager(new NoOpSource(), backend);) {
+        StoreCommunicationService.Iface impl = mgr.getStoreImpl();
         try (StoreServiceWrapper wrap = new StoreServiceWrapper(impl, 44444);) {
           LOGGER.info("about to serve");
           wrap.run();
@@ -51,6 +52,9 @@ public class ConcurrentClientTest {
         }
       } catch (InterruptedException e1) {
         LOGGER.info("Interrupted", e1);
+      } catch (Exception e2) {
+        LOGGER.error("Exception on close");
+        fail();
       }
     };
 
