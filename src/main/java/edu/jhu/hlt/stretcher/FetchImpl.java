@@ -31,9 +31,7 @@ public class FetchImpl implements FetchCommunicationService.Iface {
 
   @Override
   public ServiceInfo about() throws TException {
-    return new ServiceInfo()
-        .setName("stretcher")
-        .setVersion("0.0.0-pre-alpha");
+    return Util.serviceInfo();
   }
 
   @Override
