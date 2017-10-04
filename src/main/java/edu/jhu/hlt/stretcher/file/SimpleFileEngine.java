@@ -3,7 +3,6 @@ package edu.jhu.hlt.stretcher.file;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -34,14 +33,22 @@ public class SimpleFileEngine implements CommunicationSource, Persister {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SimpleFileEngine.class);
 
+  private static final String EXTENSION = "comm";
+
   private final Path directory;
   private final CommunicationSerializer serializer;
   private final ExecutorService executorService;
+  private final FilenameMapper mapper;
 
   public SimpleFileEngine(Path directory) throws IOException {
+    this(directory, new FlatMapper(directory, EXTENSION));
+  }
+
+  public SimpleFileEngine(Path directory, FilenameMapper mapper) throws IOException {
     this.serializer = new CompactCommunicationSerializer();
     this.executorService = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor());
     this.directory = directory.toAbsolutePath();
+    this.mapper = mapper;
     validateDirectory(this.directory);
   }
 
@@ -52,7 +59,7 @@ public class SimpleFileEngine implements CommunicationSource, Persister {
    */
   @Override
   public boolean exists(String id) {
-    return Files.exists(getPath(id));
+    return Files.exists(mapper.map(id));
   }
 
   /*
@@ -65,7 +72,7 @@ public class SimpleFileEngine implements CommunicationSource, Persister {
     AtomicInteger counter = new AtomicInteger(0);
     try {
       Files.newDirectoryStream(directory,
-              path -> path.toString().endsWith(".comm"))
+              path -> this.mapper.match(path))
               .forEach(path -> counter.getAndIncrement());
     } catch (IOException e) {
       LOGGER.error("Failed to count files in " + directory.toString(), e);
@@ -80,7 +87,7 @@ public class SimpleFileEngine implements CommunicationSource, Persister {
    */
   @Override
   public Optional<Communication> get(String id) {
-    return load(getPath(id));
+    return load(mapper.map(id));
   }
 
   /*
@@ -103,6 +110,7 @@ public class SimpleFileEngine implements CommunicationSource, Persister {
    */
   @Override
   public List<Communication> get(long offset, long nToGet) {
+    // TODO this assumes all files are communications in directory
     try {
       return Files.list(directory)
               .sorted()
@@ -127,7 +135,7 @@ public class SimpleFileEngine implements CommunicationSource, Persister {
     this.executorService.submit(() -> {
       try {
         byte[] data = serializer.toBytes(c);
-        Files.write(this.getPath(c.getId()), data);
+        Files.write(this.mapper.map(c.getId()), data);
       } catch (ConcreteException | IOException e) {
         LOGGER.warn("Unable to store " + c.getId(), e);
       }
@@ -154,10 +162,6 @@ public class SimpleFileEngine implements CommunicationSource, Persister {
     } catch (IOException e) {
       throw new IOException("Cannot open " + directory.toString(), e);
     }
-  }
-
-  private Path getPath(String id) {
-    return Paths.get(directory.toString(), id + ".comm");
   }
 
   private Optional<Communication> load(Path path) {
