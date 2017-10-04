@@ -50,6 +50,13 @@ public class SimpleFileEngineTest {
   }
 
   @Test
+  public void testSize() throws Exception {
+    SimpleFileEngine engine = new SimpleFileEngine(root);
+    assertEquals(4, engine.size());
+    engine.close();
+  }
+
+  @Test
   public void testGetById() throws Exception {
     SimpleFileEngine engine = new SimpleFileEngine(root);
     Optional<Communication> comm = engine.get("1");

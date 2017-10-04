@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -52,6 +53,24 @@ public class SimpleFileEngine implements CommunicationSource, Persister {
   @Override
   public boolean exists(String id) {
     return Files.exists(getPath(id));
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see edu.jhu.hlt.stretcher.source.CommunicationSource#size()
+   */
+  @Override
+  public int size() {
+    AtomicInteger counter = new AtomicInteger(0);
+    try {
+      Files.newDirectoryStream(directory,
+              path -> path.toString().endsWith(".comm"))
+              .forEach(path -> counter.getAndIncrement());
+    } catch (IOException e) {
+      LOGGER.error("Failed to count files in " + directory.toString(), e);
+    }
+    return counter.get();
   }
 
   /*
