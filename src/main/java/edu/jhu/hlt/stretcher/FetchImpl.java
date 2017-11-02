@@ -14,7 +14,7 @@ import edu.jhu.hlt.concrete.services.ServiceInfo;
 import edu.jhu.hlt.concrete.services.ServicesException;
 import edu.jhu.hlt.stretcher.manager.Manager;
 
-public class FetchImpl implements FetchCommunicationService.Iface {
+public class FetchImpl implements FetchCommunicationService.Iface, AutoCloseable {
 
   private final Manager mgr;
 
@@ -50,5 +50,14 @@ public class FetchImpl implements FetchCommunicationService.Iface {
         .stream()
         .map(Communication::getId)
         .collect(Collectors.toList());
+  }
+
+  @Override
+  public void close() {
+    try {
+      mgr.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 }

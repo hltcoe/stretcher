@@ -20,7 +20,9 @@ import edu.jhu.hlt.stretcher.manager.LockingManager;
 public class Server {
   private static Logger LOGGER = LoggerFactory.getLogger(Server.class);
 
+  private static Server server;
   private FetchImpl fetchImpl;
+  private FetchServiceWrapper fetchServer;
   private final int fetchPort;
   private final Path baseDir;
 
@@ -32,14 +34,21 @@ public class Server {
   }
 
   public void start() throws TException {
-    FetchServiceWrapper fetchServer = new FetchServiceWrapper(fetchImpl, fetchPort);
+    fetchServer = new FetchServiceWrapper(fetchImpl, fetchPort);
     LOGGER.info("Fetch service is started on port " + fetchPort);
     new Thread(fetchServer).start();
   }
 
+  public void stop() {
+    System.out.println();
+    fetchServer.close();
+    fetchImpl.close();
+    System.out.println("Shut down is complete");
+  }
+
   private static class Opts {
-    @Parameter(names = {"--port", "-p"}, description = "The port for fetch.")
-    int port = 9090;
+    @Parameter(names = {"--fp"}, description = "The port for fetch.")
+    int fetchPort = 9090;
 
     @Parameter(names = {"--dir", "-d"}, required = true,
                     description = "Path to the directory for the files.")
@@ -65,14 +74,22 @@ public class Server {
         return;
     }
 
-    Server server = null;
+    // initialize the server
     try {
-      server = new Server(opts.port, opts.baseDir);
+      server = new Server(opts.fetchPort, opts.baseDir);
     } catch (IOException e) {
       System.err.println("Error initializing the server: " + e.getMessage());
       System.exit(-1);
     }
 
+    // register shutdown hook so server gracefully shuts down with control-C
+    Runtime.getRuntime().addShutdownHook(new Thread() {
+      public void run() {
+        server.stop();
+      }
+    });
+
+    // start the services
     try {
       server.start();
     } catch (TException e) {

@@ -10,7 +10,7 @@ import edu.jhu.hlt.concrete.services.ServiceInfo;
 import edu.jhu.hlt.concrete.services.ServicesException;
 import edu.jhu.hlt.stretcher.manager.Manager;
 
-public class StoreImpl implements StoreCommunicationService.Iface {
+public class StoreImpl implements StoreCommunicationService.Iface, AutoCloseable {
 
   private final Manager mgr;
 
@@ -32,5 +32,14 @@ public class StoreImpl implements StoreCommunicationService.Iface {
   public void store(Communication arg0) throws ServicesException, TException {
     // pass the buck
     this.mgr.update(arg0);
+  }
+
+  @Override
+  public void close() {
+    try {
+      mgr.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 }
