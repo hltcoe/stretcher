@@ -38,6 +38,7 @@ public class ConcurrentClientTest {
     if (procs < 2) {
       fail("get better computer");
     }
+    LOGGER.info("Num processors: " + procs);
 
     Runnable backendRunnable = () -> {
       // use PrintingPersister to get access to the stored comms method
