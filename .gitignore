@@ -15,3 +15,4 @@ application.conf
 pom.xml.versionsBackup
 xtend-gen/
 *.db
+logs
