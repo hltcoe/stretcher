@@ -75,12 +75,14 @@ public class ConcurrentClientTest {
     int concurrency = procs < 4 ? procs : 4;
     Runnable parallelTool = () -> {
       try(StoreTool tool = new StoreTool("localhost", 44444, Optional.empty());) {
+        LOGGER.info("Starting");
         for (Communication cc : comms) {
           LOGGER.info("Storing");
           tool.store(cc);
         }
         LOGGER.info("Done");
       } catch (TException e) {
+        LOGGER.info("Failed to hit store service", e);
         failures.set(true);
       }
     };
