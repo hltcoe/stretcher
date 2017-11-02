@@ -18,7 +18,6 @@ public class FetchImpl implements FetchCommunicationService.Iface {
 
   private final Manager mgr;
 
-  // can imagine where you want >1 src
   public FetchImpl(Manager mgr) {
     this.mgr = mgr;
   }
@@ -34,12 +33,9 @@ public class FetchImpl implements FetchCommunicationService.Iface {
   }
 
   @Override
-  public FetchResult fetch(FetchRequest arg0) throws ServicesException, TException {
-    // req comm list
+  public FetchResult fetch(FetchRequest request) throws ServicesException, TException {
     FetchResult res = new FetchResult();
-
-    // just do comm IDs
-    this.mgr.get(arg0.getCommunicationIds()).forEach(res::addToCommunications);
+    this.mgr.get(request.getCommunicationIds()).forEach(res::addToCommunications);
     return res;
   }
 
