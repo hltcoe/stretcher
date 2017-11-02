@@ -13,8 +13,10 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 
 import edu.jhu.hlt.concrete.services.fetch.FetchServiceWrapper;
+import edu.jhu.hlt.concrete.services.store.StoreServiceWrapper;
 import edu.jhu.hlt.stretcher.file.SimpleFileEngine;
 import edu.jhu.hlt.stretcher.manager.LockingManager;
+import edu.jhu.hlt.stretcher.manager.Manager;
 
 
 public class Server {
@@ -23,32 +25,46 @@ public class Server {
   private static Server server;
   private FetchImpl fetchImpl;
   private FetchServiceWrapper fetchServer;
+  private StoreImpl storeImpl;
+  private StoreServiceWrapper storeServer;
   private final int fetchPort;
+  private final int storePort;
   private final Path baseDir;
 
-  public Server(int fetchPort, String baseDir) throws IOException {
+  public Server(int fetchPort, int storePort, String baseDir) throws IOException {
     this.fetchPort = fetchPort;
+    this.storePort = storePort;
     this.baseDir = Paths.get(baseDir);
     SimpleFileEngine engine = new SimpleFileEngine(this.baseDir);
-    this.fetchImpl = new FetchImpl(new LockingManager(engine, engine));
+    Manager manager = new LockingManager(engine, engine);
+    this.fetchImpl = new FetchImpl(manager);
+    this.storeImpl = new StoreImpl(manager);
   }
 
   public void start() throws TException {
     fetchServer = new FetchServiceWrapper(fetchImpl, fetchPort);
     LOGGER.info("Fetch service is started on port " + fetchPort);
     new Thread(fetchServer).start();
+    storeServer = new StoreServiceWrapper(storeImpl, storePort);
+    LOGGER.info("Store service is started on port " + storePort);
+    new Thread(storeServer).start();
   }
 
   public void stop() {
     System.out.println();
     fetchServer.close();
     fetchImpl.close();
+    storeServer.close();
+    storeImpl.close();
     System.out.println("Shut down is complete");
   }
 
   private static class Opts {
     @Parameter(names = {"--fp"}, description = "The port for fetch.")
     int fetchPort = 9090;
+
+    @Parameter(names = {"--sp"}, description = "The port for store.")
+    int storePort = 9091;
 
     @Parameter(names = {"--dir", "-d"}, required = true,
                     description = "Path to the directory for the files.")
@@ -76,7 +92,7 @@ public class Server {
 
     // initialize the server
     try {
-      server = new Server(opts.fetchPort, opts.baseDir);
+      server = new Server(opts.fetchPort, opts.storePort, opts.baseDir);
     } catch (IOException e) {
       System.err.println("Error initializing the server: " + e.getMessage());
       System.exit(-1);
