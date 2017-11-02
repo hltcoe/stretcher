@@ -61,6 +61,8 @@ public class ConcurrentClientTest {
 
     Thread server = new Thread(backendRunnable, "ServerThread");
     server.start();
+    // hack to give store service a chance to run before hitting it
+    Thread.sleep(500);
 
     AnnotationMetadata amd = AnnotationMetadataFactory.fromCurrentLocalTime("test");
     Communication c = new Communication();
