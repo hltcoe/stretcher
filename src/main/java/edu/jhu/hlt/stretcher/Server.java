@@ -15,7 +15,7 @@ import com.beust.jcommander.ParameterException;
 import edu.jhu.hlt.concrete.services.fetch.FetchServiceWrapper;
 import edu.jhu.hlt.concrete.services.store.StoreServiceWrapper;
 import edu.jhu.hlt.stretcher.file.SimpleFileEngine;
-import edu.jhu.hlt.stretcher.manager.LockingManager;
+import edu.jhu.hlt.stretcher.manager.DirectLockingManager;
 import edu.jhu.hlt.stretcher.manager.Manager;
 
 
@@ -36,7 +36,7 @@ public class Server {
     this.storePort = storePort;
     this.baseDir = Paths.get(baseDir);
     SimpleFileEngine engine = new SimpleFileEngine(this.baseDir);
-    Manager manager = new LockingManager(engine, engine);
+    Manager manager = new DirectLockingManager(engine, engine);
     this.fetchImpl = new FetchImpl(manager);
     this.storeImpl = new StoreImpl(manager);
   }
