@@ -15,3 +15,13 @@ We will also be adding higher throughput components and new features like filter
 ```
 ./start.sh -d [directory that contains communications]
 ```
+## Docker
+To build the image, run:
+```
+docker build -t hltcoe/stretcher .
+```
+
+To run the application with fetch on 8888 and store on 8989 out of the directory /opt/my_data:
+```
+docker run -d -v /opt/my_data:/data -p 8888:9090 -p 8989:9091 hltcoe/stretcher -d /data
+```
