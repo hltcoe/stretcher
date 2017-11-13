@@ -6,6 +6,7 @@
 package edu.jhu.hlt.stretcher;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -22,6 +23,10 @@ import edu.jhu.hlt.concrete.services.store.StoreServiceWrapper;
 import edu.jhu.hlt.stretcher.file.SimpleFileEngine;
 import edu.jhu.hlt.stretcher.manager.DirectLockingManager;
 import edu.jhu.hlt.stretcher.manager.Manager;
+import edu.jhu.hlt.stretcher.source.CommunicationSource;
+import edu.jhu.hlt.stretcher.source.ZipSource;
+import edu.jhu.hlt.stretcher.storage.NoOpPersister;
+import edu.jhu.hlt.stretcher.storage.Persister;
 
 
 public class Server {
@@ -34,16 +39,31 @@ public class Server {
   private StoreServiceWrapper storeServer;
   private final int fetchPort;
   private final int storePort;
-  private final Path baseDir;
+  private final Path path;
 
-  public Server(int fetchPort, int storePort, String baseDir) throws IOException {
+  public Server(int fetchPort, int storePort, String path) throws IOException {
     this.fetchPort = fetchPort;
     this.storePort = storePort;
-    this.baseDir = Paths.get(baseDir);
-    SimpleFileEngine engine = new SimpleFileEngine(this.baseDir);
-    Manager manager = new DirectLockingManager(engine, engine);
+    this.path = Paths.get(path);
+    Manager manager = getManager(this.path);
     this.fetchImpl = new FetchImpl(manager);
     this.storeImpl = new StoreImpl(manager);
+  }
+
+  // replace this method with a class the constructs the manager based on config/options
+  private Manager getManager(Path path) throws IOException {
+    Manager manager = null;
+    if (Files.isDirectory(path)) {
+      SimpleFileEngine engine = new SimpleFileEngine(path);
+      manager = new DirectLockingManager(engine, engine);
+      LOGGER.info("Serving from the directory " + path.toString());
+    } else {
+      CommunicationSource source = new ZipSource(path);
+      Persister persister = new NoOpPersister();
+      manager = new DirectLockingManager(source, persister);
+      LOGGER.info("Serving from the zip file " + path.toString());
+    }
+    return manager;
   }
 
   public void start() throws TException {
@@ -73,7 +93,7 @@ public class Server {
 
     @Parameter(names = {"--path", "-p"}, required = true,
                     description = "Path to a directory with Concrete files or an archive file.")
-    String baseDir = "/tmp/";
+    String path = "/tmp/";
 
     @Parameter(names = {"--help", "-h"}, help = true,
                     description = "Print the usage information and exit.")
@@ -97,7 +117,7 @@ public class Server {
 
     // initialize the server
     try {
-      server = new Server(opts.fetchPort, opts.storePort, opts.baseDir);
+      server = new Server(opts.fetchPort, opts.storePort, opts.path);
     } catch (IOException e) {
       System.err.println("Error initializing the server: " + e.getMessage());
       System.exit(-1);
