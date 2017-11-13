@@ -71,8 +71,8 @@ public class Server {
     @Parameter(names = {"--sp"}, description = "The port for store.")
     int storePort = 9091;
 
-    @Parameter(names = {"--dir", "-d"}, required = true,
-                    description = "Path to the directory for the files.")
+    @Parameter(names = {"--path", "-p"}, required = true,
+                    description = "Path to a directory with Concrete files or an archive file.")
     String baseDir = "/tmp/";
 
     @Parameter(names = {"--help", "-h"}, help = true,
