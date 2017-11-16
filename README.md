@@ -8,9 +8,12 @@ mvn clean package
 
 ## Run
 This is a work in progress.
-stretcher currently only supports a directory of Concrete objects with names [id].comm.
-Additional support for gzipped files, zipped archives, tarballs, and alternate naming schemes will be coming.
-We will also be adding higher throughput components and new features like filtering data before returning fetch results.
+Stretcher supports serving files in:
+ * single zip archive
+ * a directory uncompressed named by id with no extension, "comm", or "concrete"
+ * a directory gzipped compressed named by id with extension "gz" or "comm.gz"
+
+Note: using a zip archive is read-only. The store service will drop changes.
 
 Stretcher automatically detects the format of the data given a path to a directory or file.
 

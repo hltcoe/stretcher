@@ -25,7 +25,6 @@ import com.google.common.util.concurrent.MoreExecutors;
 
 import edu.jhu.hlt.concrete.Communication;
 import edu.jhu.hlt.concrete.serialization.CommunicationSerializer;
-import edu.jhu.hlt.concrete.serialization.CompactCommunicationSerializer;
 import edu.jhu.hlt.concrete.util.ConcreteException;
 import edu.jhu.hlt.stretcher.source.CommunicationSource;
 import edu.jhu.hlt.stretcher.storage.Persister;
@@ -38,23 +37,18 @@ public class SimpleFileEngine implements CommunicationSource, Persister {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SimpleFileEngine.class);
 
-  private static final String EXTENSION = "comm";
-
   private final Path directory;
-  private final CommunicationSerializer serializer;
+  private final ConcreteFiles helper;
   private final ExecutorService executorService;
   private final FilenameMapper mapper;
 
   public SimpleFileEngine(Path directory) throws IOException {
-    this(directory, new FlatMapper(directory, EXTENSION));
-  }
-
-  public SimpleFileEngine(Path directory, FilenameMapper mapper) throws IOException {
-    this.serializer = new CompactCommunicationSerializer();
+    validateDirectory(directory);
+    FormatDetector detector = new FormatDetector(directory);
+    this.mapper = detector.getMapper();
+    this.helper = detector.getHelper();
     this.executorService = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor());
     this.directory = directory.toAbsolutePath();
-    this.mapper = mapper;
-    validateDirectory(this.directory);
   }
 
   /*
@@ -82,6 +76,7 @@ public class SimpleFileEngine implements CommunicationSource, Persister {
     } catch (IOException e) {
       LOGGER.error("Failed to count files in " + directory.toString(), e);
     }
+    LOGGER.info("size() is returning " + counter.get());
     return counter.get();
   }
 
@@ -106,6 +101,7 @@ public class SimpleFileEngine implements CommunicationSource, Persister {
     for (String id : ids) {
       this.get(id).ifPresent(comms::add);
     }
+    LOGGER.info("Returning " + comms.size() + " communications");
     return comms;
   }
 
@@ -115,9 +111,10 @@ public class SimpleFileEngine implements CommunicationSource, Persister {
    */
   @Override
   public List<Communication> get(long offset, long nToGet) {
+    List<Communication> comms = Collections.emptyList();
     // TODO this assumes all files are communications in directory
     try {
-      return Files.list(directory)
+      comms = Files.list(directory)
               .sorted()
               .skip(offset)
               .limit(nToGet)
@@ -127,8 +124,9 @@ public class SimpleFileEngine implements CommunicationSource, Persister {
               .collect(Collectors.toList());
     } catch (IOException e) {
       LOGGER.warn("Unable to open " + directory.toString());
-      return Collections.emptyList();
     }
+    LOGGER.info("Returning " + comms.size() + " communications");
+    return comms;
   }
 
   /*
@@ -139,9 +137,8 @@ public class SimpleFileEngine implements CommunicationSource, Persister {
   public void store(Communication c) {
     this.executorService.submit(() -> {
       try {
-        byte[] data = serializer.toBytes(c);
-        Files.write(this.mapper.map(c.getId()), data);
-      } catch (ConcreteException | IOException e) {
+        helper.write(mapper.map(c.getId()), c);
+      } catch (ConcreteException e) {
         LOGGER.warn("Unable to store " + c.getId(), e);
       }
     });
@@ -171,7 +168,7 @@ public class SimpleFileEngine implements CommunicationSource, Persister {
 
   private Optional<Communication> load(Path path) {
     try {
-      Communication comm = serializer.fromPath(path);
+      Communication comm = helper.read(path);
       return Optional.of(comm);
     } catch (ConcreteException e) {
       return Optional.empty();

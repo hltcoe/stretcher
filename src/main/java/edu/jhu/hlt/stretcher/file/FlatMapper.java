@@ -19,6 +19,16 @@ public class FlatMapper implements FilenameMapper {
     this.extension = "." + extension;
   }
 
+  public FlatMapper(Path directory, boolean hasExtension) {
+    this.directory = directory;
+    if (!hasExtension) {
+      this.extension = "";
+    } else {
+      // TODO - stupid user
+      this.extension = "";
+    }
+  }
+
   @Override
   public Path map(String id) {
     return Paths.get(directory.toString(), id + extension);
