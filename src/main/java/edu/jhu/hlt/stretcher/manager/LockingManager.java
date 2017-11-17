@@ -19,13 +19,13 @@ import edu.jhu.hlt.stretcher.storage.Persister;
  *
  * Lock across fetch and store for any operation.
  */
-public class DirectLockingManager implements Manager {
+public class LockingManager implements Manager {
 
   private final CommunicationSource src;
   private final Persister storage;
   private final Lock lock;
 
-  public DirectLockingManager(CommunicationSource source, Persister storage) {
+  public LockingManager(CommunicationSource source, Persister storage) {
     this.lock = new ReentrantLock();
     this.src = source;
     this.storage = storage;

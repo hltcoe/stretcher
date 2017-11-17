@@ -20,7 +20,7 @@ import com.beust.jcommander.ParameterException;
 
 import edu.jhu.hlt.concrete.services.fetch.FetchServiceWrapper;
 import edu.jhu.hlt.concrete.services.store.StoreServiceWrapper;
-import edu.jhu.hlt.stretcher.manager.DirectLockingManager;
+import edu.jhu.hlt.stretcher.manager.LockingManager;
 import edu.jhu.hlt.stretcher.manager.Manager;
 import edu.jhu.hlt.stretcher.source.CommunicationSource;
 import edu.jhu.hlt.stretcher.source.DirectorySource;
@@ -57,12 +57,12 @@ public class Server {
     if (Files.isDirectory(path)) {
       CommunicationSource source = new DirectorySource(path);
       Persister persister = new DirectoryPersister(path);
-      manager = new DirectLockingManager(source, persister);
+      manager = new LockingManager(source, persister);
       LOGGER.info("Serving from the directory " + path.toString());
     } else {
       CommunicationSource source = new ZipSource(path);
       Persister persister = new NoOpPersister();
-      manager = new DirectLockingManager(source, persister);
+      manager = new LockingManager(source, persister);
       LOGGER.info("Serving from the zip file " + path.toString());
     }
     return manager;
