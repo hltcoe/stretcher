@@ -15,9 +15,9 @@ import edu.jhu.hlt.stretcher.source.CommunicationSource;
 import edu.jhu.hlt.stretcher.storage.Persister;
 
 /**
- * This is the most basic implementation of a manager.
- * Lock across fetch and store.
- * No caching, but directly reads/writes to CommunicationSource and Persister.
+ * Basic manager for reading and writing communications.
+ *
+ * Lock across fetch and store for any operation.
  */
 public class DirectLockingManager implements Manager {
 
@@ -80,7 +80,9 @@ public class DirectLockingManager implements Manager {
 
   @Override
   public void close() throws Exception {
+    lock.lock();
     this.storage.close();
+    lock.unlock();
   }
 
 }
