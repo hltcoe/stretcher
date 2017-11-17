@@ -1,9 +1,4 @@
-/*
- * Copyright 2012-2017 Johns Hopkins University HLTCOE. All rights reserved.
- * This software is released under the 2-clause BSD license.
- * See LICENSE in the project root directory.
- */
-package edu.jhu.hlt.stretcher.file;
+package edu.jhu.hlt.stretcher.source;
 
 import static org.junit.Assert.*;
 
@@ -15,15 +10,13 @@ import java.util.Optional;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import edu.jhu.hlt.concrete.Communication;
 import edu.jhu.hlt.stretcher.CommunicationUtility;
 
-public class SimpleFileEngineTest {
-
+public class DirectorySourceTest {
   public static TemporaryFolder folder = new TemporaryFolder();
   public static Path root;
 
@@ -48,63 +41,46 @@ public class SimpleFileEngineTest {
 
   @Test
   public void testExists() throws Exception {
-    SimpleFileEngine engine = new SimpleFileEngine(root);
-    assertTrue(engine.exists("1"));
-    assertFalse(engine.exists("0"));
-    engine.close();
+    DirectorySource source = new DirectorySource(root);
+    assertTrue(source.exists("1"));
+    assertFalse(source.exists("0"));
   }
 
   @Test
   public void testSize() throws Exception {
-    SimpleFileEngine engine = new SimpleFileEngine(root);
-    assertEquals(4, engine.size());
-    engine.close();
+    DirectorySource source = new DirectorySource(root);
+    assertEquals(4, source.size());
   }
 
   @Test
   public void testGetById() throws Exception {
-    SimpleFileEngine engine = new SimpleFileEngine(root);
-    Optional<Communication> comm = engine.get("1");
+    DirectorySource source = new DirectorySource(root);
+    Optional<Communication> comm = source.get("1");
     assertTrue(comm.isPresent());
     assertEquals("1", comm.get().getId());
-    assertFalse(engine.get("76").isPresent());
-    engine.close();
+    assertFalse(source.get("76").isPresent());
   }
 
   @Test
   public void testGetByList() throws Exception {
-    SimpleFileEngine engine = new SimpleFileEngine(root);
-    List<Communication> list = engine.get(Arrays.asList("0", "1", "2"));
+    DirectorySource source = new DirectorySource(root);
+    List<Communication> list = source.get(Arrays.asList("0", "1", "2"));
     assertEquals(2, list.size());
-    engine.close();
   }
 
   @Test
   public void testGetIterator() throws Exception {
-    SimpleFileEngine engine = new SimpleFileEngine(root);
-    List<Communication> list = engine.get(0, 2);
+    DirectorySource source = new DirectorySource(root);
+    List<Communication> list = source.get(0, 2);
     assertEquals(2, list.size());
     assertEquals("1", list.get(0).getId());
     assertEquals("2", list.get(1).getId());
-    list = engine.get(2, 2);
+    list = source.get(2, 2);
     assertEquals(2, list.size());
     assertEquals("3", list.get(0).getId());
     assertEquals("4", list.get(1).getId());
-    list = engine.get(4, 2);
+    list = source.get(4, 2);
     assertEquals(0, list.size());
-    engine.close();
-  }
-
-  @Ignore
-  public void testStore() throws Exception {
-    SimpleFileEngine engine = new SimpleFileEngine(root);
-    Communication c = CommunicationUtility.create("99", "store test");
-    engine.store(c);
-    Thread.sleep(100);
-    Optional<Communication> comm = engine.get("99");
-    assertTrue(comm.isPresent());
-    assertEquals("99", comm.get().getId());
-    engine.close();
   }
 
 }

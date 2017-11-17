@@ -24,8 +24,7 @@ public class FlatMapper implements FilenameMapper {
     if (!hasExtension) {
       this.extension = "";
     } else {
-      // TODO - stupid user
-      this.extension = "";
+      throw new RuntimeException("Only call this constructor with hasExtension as false");
     }
   }
 

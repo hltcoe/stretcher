@@ -20,11 +20,12 @@ import com.beust.jcommander.ParameterException;
 
 import edu.jhu.hlt.concrete.services.fetch.FetchServiceWrapper;
 import edu.jhu.hlt.concrete.services.store.StoreServiceWrapper;
-import edu.jhu.hlt.stretcher.file.SimpleFileEngine;
 import edu.jhu.hlt.stretcher.manager.DirectLockingManager;
 import edu.jhu.hlt.stretcher.manager.Manager;
 import edu.jhu.hlt.stretcher.source.CommunicationSource;
+import edu.jhu.hlt.stretcher.source.DirectorySource;
 import edu.jhu.hlt.stretcher.source.ZipSource;
+import edu.jhu.hlt.stretcher.storage.DirectoryPersister;
 import edu.jhu.hlt.stretcher.storage.NoOpPersister;
 import edu.jhu.hlt.stretcher.storage.Persister;
 
@@ -54,8 +55,9 @@ public class Server {
   private Manager getManager(Path path) throws IOException {
     Manager manager = null;
     if (Files.isDirectory(path)) {
-      SimpleFileEngine engine = new SimpleFileEngine(path);
-      manager = new DirectLockingManager(engine, engine);
+      CommunicationSource source = new DirectorySource(path);
+      Persister persister = new DirectoryPersister(path);
+      manager = new DirectLockingManager(source, persister);
       LOGGER.info("Serving from the directory " + path.toString());
     } else {
       CommunicationSource source = new ZipSource(path);
