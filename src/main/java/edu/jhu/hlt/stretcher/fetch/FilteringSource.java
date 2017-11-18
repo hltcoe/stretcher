@@ -1,40 +1,34 @@
-package edu.jhu.hlt.stretcher.source;
+/*
+ * Copyright 2012-2017 Johns Hopkins University HLTCOE. All rights reserved.
+ * This software is released under the 2-clause BSD license.
+ * See LICENSE in the project root directory.
+ */
+package edu.jhu.hlt.stretcher.fetch;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.cache.CacheBuilder;
-
 import edu.jhu.hlt.concrete.Communication;
+import edu.jhu.hlt.stretcher.filter.CommunicationFilter;
 
 /**
- * Caching wrapper for a communication source.
+ * Filter communications before returning.
  *
- * Use this if you expect access patterns will result in the same communications
- * requested over a short period of time.
- * If the source and persister are using the same directory or file, the update()
- * should be called to update the cache.
+ * Use before CachingSource in a cascade.
  */
-public class CachingSource implements CommunicationSource {
-  private static final Logger LOGGER = LoggerFactory.getLogger(CachingSource.class);
-
-  private static final long DEFAULT_MAX_SIZE = 1000L;
+public class FilteringSource implements CommunicationSource {
+  private static final Logger LOGGER = LoggerFactory.getLogger(FilteringSource.class);
 
   private final CommunicationSource source;
-  private final ConcurrentMap<String, Communication> cache;
+  private final CommunicationFilter filter;
 
-  public CachingSource(CommunicationSource source) {
-    this(source, DEFAULT_MAX_SIZE);
-  }
-
-  public CachingSource(CommunicationSource source, long size) {
+  public FilteringSource(CommunicationSource source, CommunicationFilter filter) {
     this.source = source;
-    this.cache = CacheBuilder.newBuilder().maximumSize(size).<String, Communication>build().asMap();
+    this.filter = filter;
   }
 
   /*
@@ -44,7 +38,7 @@ public class CachingSource implements CommunicationSource {
    */
   @Override
   public boolean exists(String id) {
-    return cache.containsKey(id) || source.exists(id);
+    return source.exists(id);
   }
 
   /*
@@ -64,17 +58,11 @@ public class CachingSource implements CommunicationSource {
    */
   @Override
   public Optional<Communication> get(String id) {
-    Communication c = cache.get(id);
-    if (c != null) {
-      LOGGER.debug("Cache hit for " + id);
-      return Optional.of(c);
-    } else {
-      Optional<Communication> opt = source.get(id);
-      if (opt.isPresent()) {
-        cache.put(id, opt.get());
-      }
-      return opt;
+    Optional<Communication> optional = source.get(id);
+    if (optional.isPresent()) {
+      filter.filter(optional.get());
     }
+    return optional;
   }
 
   /*
@@ -99,10 +87,6 @@ public class CachingSource implements CommunicationSource {
   @Override
   public List<Communication> get(long offset, long nToGet) {
     return source.get(offset, nToGet);
-  }
-
-  public void update(Communication c) {
-    cache.replace(c.getId(), c);
   }
 
 }

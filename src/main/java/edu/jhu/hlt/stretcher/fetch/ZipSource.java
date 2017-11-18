@@ -3,7 +3,7 @@
  * This software is released under the 2-clause BSD license.
  * See LICENSE in the project root directory.
  */
-package edu.jhu.hlt.stretcher.source;
+package edu.jhu.hlt.stretcher.fetch;
 
 import java.io.IOException;
 import java.io.InputStream;

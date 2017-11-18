@@ -3,7 +3,7 @@
  * This software is released under the 2-clause BSD license.
  * See LICENSE in the project root directory.
  */
-package edu.jhu.hlt.stretcher.source;
+package edu.jhu.hlt.stretcher.fetch;
 
 import static org.junit.Assert.*;
 
@@ -20,6 +20,7 @@ import org.junit.rules.TemporaryFolder;
 
 import edu.jhu.hlt.concrete.Communication;
 import edu.jhu.hlt.stretcher.CommunicationUtility;
+import edu.jhu.hlt.stretcher.fetch.DirectorySource;
 
 public class DirectorySourceTest {
   public static TemporaryFolder folder = new TemporaryFolder();

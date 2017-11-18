@@ -20,14 +20,14 @@ import com.beust.jcommander.ParameterException;
 
 import edu.jhu.hlt.concrete.services.fetch.FetchServiceWrapper;
 import edu.jhu.hlt.concrete.services.store.StoreServiceWrapper;
+import edu.jhu.hlt.stretcher.fetch.CommunicationSource;
+import edu.jhu.hlt.stretcher.fetch.DirectorySource;
+import edu.jhu.hlt.stretcher.fetch.ZipSource;
 import edu.jhu.hlt.stretcher.manager.LockingManager;
 import edu.jhu.hlt.stretcher.manager.Manager;
-import edu.jhu.hlt.stretcher.source.CommunicationSource;
-import edu.jhu.hlt.stretcher.source.DirectorySource;
-import edu.jhu.hlt.stretcher.source.ZipSource;
-import edu.jhu.hlt.stretcher.storage.DirectoryPersister;
-import edu.jhu.hlt.stretcher.storage.NoOpPersister;
-import edu.jhu.hlt.stretcher.storage.Persister;
+import edu.jhu.hlt.stretcher.store.DirectoryPersister;
+import edu.jhu.hlt.stretcher.store.NoOpPersister;
+import edu.jhu.hlt.stretcher.store.Persister;
 
 
 public class Server {

@@ -3,12 +3,13 @@
  * This software is released under the 2-clause BSD license.
  * See LICENSE in the project root directory.
  */
-package edu.jhu.hlt.stretcher.storage;
+package edu.jhu.hlt.stretcher.store;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import edu.jhu.hlt.concrete.Communication;
+import edu.jhu.hlt.stretcher.store.Persister;
 
 public class MemoryPersister implements Persister {
 

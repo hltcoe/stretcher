@@ -3,7 +3,7 @@
  * This software is released under the 2-clause BSD license.
  * See LICENSE in the project root directory.
  */
-package edu.jhu.hlt.stretcher.storage;
+package edu.jhu.hlt.stretcher.store;
 
 import static org.junit.Assert.*;
 
@@ -12,11 +12,13 @@ import org.junit.Test;
 import edu.jhu.hlt.concrete.Communication;
 import edu.jhu.hlt.stretcher.CommunicationUtility;
 import edu.jhu.hlt.stretcher.combiner.CommunicationCombiner;
+import edu.jhu.hlt.stretcher.store.CombiningPersister;
+import edu.jhu.hlt.stretcher.store.Persister;
 
 public class CombiningPersisterTest {
 
   @Test
-  public void test() {
+  public void test() throws Exception {
     MemoryPersister store = new MemoryPersister();
     Persister persister = new CombiningPersister(store, new TextAppender());
     Communication c1 = CommunicationUtility.create("1", "hello");
@@ -27,6 +29,7 @@ public class CombiningPersisterTest {
     assertEquals("hello", store.retrieve("1").getText());
     persister.store(c2);
     assertEquals("hello world", store.retrieve("1").getText());
+    persister.close();
   }
 
   private class TextAppender implements CommunicationCombiner {

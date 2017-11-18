@@ -3,7 +3,7 @@
  * This software is released under the 2-clause BSD license.
  * See LICENSE in the project root directory.
  */
-package edu.jhu.hlt.stretcher.source;
+package edu.jhu.hlt.stretcher.fetch;
 
 import static org.junit.Assert.*;
 
@@ -16,6 +16,8 @@ import org.junit.Test;
 
 import edu.jhu.hlt.concrete.Communication;
 import edu.jhu.hlt.stretcher.CommunicationUtility;
+import edu.jhu.hlt.stretcher.fetch.CachingSource;
+import edu.jhu.hlt.stretcher.fetch.CommunicationSource;
 
 public class CachingSourceTest {
 

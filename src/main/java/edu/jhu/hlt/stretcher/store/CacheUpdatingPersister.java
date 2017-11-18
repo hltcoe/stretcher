@@ -3,11 +3,11 @@
  * This software is released under the 2-clause BSD license.
  * See LICENSE in the project root directory.
  */
-package edu.jhu.hlt.stretcher.storage;
+package edu.jhu.hlt.stretcher.store;
 
 import edu.jhu.hlt.concrete.Communication;
-import edu.jhu.hlt.stretcher.source.CachingSource;
-import edu.jhu.hlt.stretcher.source.CommunicationSource;
+import edu.jhu.hlt.stretcher.fetch.CachingSource;
+import edu.jhu.hlt.stretcher.fetch.CommunicationSource;
 
 /**
  * Updates the source cache on calls to store.

@@ -10,7 +10,7 @@ import edu.jhu.hlt.concrete.access.FetchCommunicationService;
 import edu.jhu.hlt.concrete.access.StoreCommunicationService;
 import edu.jhu.hlt.stretcher.FetchImpl;
 import edu.jhu.hlt.stretcher.StoreImpl;
-import edu.jhu.hlt.stretcher.source.CommunicationSource;
+import edu.jhu.hlt.stretcher.fetch.CommunicationSource;
 
 /**
  * for the storage layer (as well as fetch/storage hybrids),

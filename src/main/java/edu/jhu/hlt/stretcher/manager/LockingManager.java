@@ -11,8 +11,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import edu.jhu.hlt.concrete.Communication;
-import edu.jhu.hlt.stretcher.source.CommunicationSource;
-import edu.jhu.hlt.stretcher.storage.Persister;
+import edu.jhu.hlt.stretcher.fetch.CommunicationSource;
+import edu.jhu.hlt.stretcher.store.Persister;
 
 /**
  * Basic manager for reading and writing communications.
