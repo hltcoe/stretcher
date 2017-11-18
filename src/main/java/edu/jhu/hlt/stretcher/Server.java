@@ -6,9 +6,6 @@
 package edu.jhu.hlt.stretcher;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -20,52 +17,26 @@ import com.beust.jcommander.ParameterException;
 
 import edu.jhu.hlt.concrete.services.fetch.FetchServiceWrapper;
 import edu.jhu.hlt.concrete.services.store.StoreServiceWrapper;
-import edu.jhu.hlt.stretcher.fetch.CommunicationSource;
-import edu.jhu.hlt.stretcher.fetch.DirectorySource;
-import edu.jhu.hlt.stretcher.fetch.ZipSource;
-import edu.jhu.hlt.stretcher.manager.LockingManager;
 import edu.jhu.hlt.stretcher.manager.Manager;
-import edu.jhu.hlt.stretcher.store.DirectoryPersister;
-import edu.jhu.hlt.stretcher.store.NoOpPersister;
-import edu.jhu.hlt.stretcher.store.Persister;
-
+import edu.jhu.hlt.stretcher.manager.ManagerFactory;
 
 public class Server {
   private static Logger LOGGER = LoggerFactory.getLogger(Server.class);
 
   private static Server server;
-  private FetchImpl fetchImpl;
-  private FetchServiceWrapper fetchServer;
-  private StoreImpl storeImpl;
-  private StoreServiceWrapper storeServer;
   private final int fetchPort;
+  private final FetchImpl fetchImpl;
+  private FetchServiceWrapper fetchServer;
   private final int storePort;
-  private final Path path;
+  private final StoreImpl storeImpl;
+  private StoreServiceWrapper storeServer;
 
-  public Server(int fetchPort, int storePort, String path) throws IOException {
-    this.fetchPort = fetchPort;
-    this.storePort = storePort;
-    this.path = Paths.get(path);
-    Manager manager = getManager(this.path);
+  public Server(Opts opts) throws IOException {
+    this.fetchPort = opts.fetchPort;
+    this.storePort = opts.storePort;
+    Manager manager = ManagerFactory.create(opts);
     this.fetchImpl = new FetchImpl(manager);
     this.storeImpl = new StoreImpl(manager);
-  }
-
-  // replace this method with a class the constructs the manager based on config/options
-  private Manager getManager(Path path) throws IOException {
-    Manager manager = null;
-    if (Files.isDirectory(path)) {
-      CommunicationSource source = new DirectorySource(path);
-      Persister persister = new DirectoryPersister(path);
-      manager = new LockingManager(source, persister);
-      LOGGER.info("Serving from the directory " + path.toString());
-    } else {
-      CommunicationSource source = new ZipSource(path);
-      Persister persister = new NoOpPersister();
-      manager = new LockingManager(source, persister);
-      LOGGER.info("Serving from the zip file " + path.toString());
-    }
-    return manager;
   }
 
   public void start() throws TException {
@@ -86,20 +57,20 @@ public class Server {
     System.out.println("Shut down is complete");
   }
 
-  private static class Opts {
+  public static class Opts {
     @Parameter(names = {"--fp"}, description = "The port for fetch.")
-    int fetchPort = 9090;
+    public int fetchPort = 9090;
 
     @Parameter(names = {"--sp"}, description = "The port for store.")
-    int storePort = 9091;
+    public int storePort = 9091;
 
     @Parameter(names = {"--path", "-p"}, required = true,
                     description = "Path to a directory with Concrete files or an archive file.")
-    String path = "/tmp/";
+    public String path = "/tmp/";
 
     @Parameter(names = {"--help", "-h"}, help = true,
                     description = "Print the usage information and exit.")
-    boolean help;
+    public boolean help;
   }
 
   public static void main(String[] args) {
@@ -119,7 +90,7 @@ public class Server {
 
     // initialize the server
     try {
-      server = new Server(opts.fetchPort, opts.storePort, opts.path);
+      server = new Server(opts);
     } catch (IOException e) {
       System.err.println("Error initializing the server: " + e.getMessage());
       System.exit(-1);
