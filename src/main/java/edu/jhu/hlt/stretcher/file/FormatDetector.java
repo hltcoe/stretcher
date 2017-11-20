@@ -19,11 +19,14 @@ import java.util.Optional;
  * commID.concrete
  */
 public class FormatDetector {
+  private final Path directory;
+  private final String extension;
   private final FilenameMapper mapper;
   private final ConcreteFiles helper;
   private static List<String> EXTENSIONS = Arrays.asList(new String[] {"comm", "concrete"});
 
   public FormatDetector(Path directory) throws IOException {
+    this.directory = directory;
     Optional<Path> file = Files.list(directory).findFirst();
     if (!file.isPresent()) {
       throw new IOException("Empty directory");
@@ -31,7 +34,8 @@ public class FormatDetector {
     String filename = file.get().getFileName().toString();
     if (!filename.contains(".")) {
       // uncompressed with no extension
-      mapper = new FlatMapper(directory, false);
+      extension = "";
+      mapper = new FlatMapper(directory, "");
       helper = new UncompressedConcreteFiles();
     } else {
       String[] parts = filename.split("\\.");
@@ -40,18 +44,22 @@ public class FormatDetector {
         helper = new GzConcreteFiles();
         if (EXTENSIONS.contains(parts[parts.length - 2])) {
           // comm.gz
-          mapper = new FlatMapper(directory, parts[parts.length - 2] + "." + parts[parts.length - 1]);
+          extension = parts[parts.length - 2] + "." + parts[parts.length - 1];
+          mapper = new FlatMapper(directory, extension);
         } else {
           // gz
-          mapper = new FlatMapper(directory, parts[parts.length - 1]);
+          extension = parts[parts.length - 1];
+          mapper = new FlatMapper(directory, extension);
         }
       } else {
         // uncompressed
         helper = new UncompressedConcreteFiles();
         if (EXTENSIONS.contains(parts[parts.length - 1])) {
-          mapper = new FlatMapper(directory, parts[parts.length - 1]);
+          extension = parts[parts.length - 1];
+          mapper = new FlatMapper(directory, extension);
         } else {
-          mapper = new FlatMapper(directory, false);
+          extension = "";
+          mapper = new FlatMapper(directory, "");
         }
       }
     }
@@ -63,5 +71,13 @@ public class FormatDetector {
 
   public ConcreteFiles getHelper() {
     return helper;
+  }
+
+  public Path getDirectory() {
+    return directory;
+  }
+
+  public String getExtension() {
+    return extension;
   }
 }

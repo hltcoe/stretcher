@@ -15,16 +15,14 @@ public class FlatMapper implements FilenameMapper {
 
   public FlatMapper(Path directory, String extension) {
     this.directory = directory;
-    // TODO do something smarter here in case user passes ".concrete"
-    this.extension = "." + extension;
-  }
-
-  public FlatMapper(Path directory, boolean hasExtension) {
-    this.directory = directory;
-    if (!hasExtension) {
+    if (extension == null || extension == "") {
       this.extension = "";
     } else {
-      throw new RuntimeException("Only call this constructor with hasExtension as false");
+      if (extension.startsWith(".")) {
+        this.extension = extension;
+      } else {
+        this.extension = "." + extension;
+      }
     }
   }
 
