@@ -6,7 +6,6 @@
 package edu.jhu.hlt.stretcher.store;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -19,9 +18,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 import edu.jhu.hlt.concrete.Communication;
 import edu.jhu.hlt.concrete.util.ConcreteException;
 import edu.jhu.hlt.stretcher.file.ConcreteFiles;
-import edu.jhu.hlt.stretcher.file.FileUtility;
 import edu.jhu.hlt.stretcher.file.FilenameMapper;
-import edu.jhu.hlt.stretcher.file.FormatDetector;
 
 /**
  * Thread-safe persister.
@@ -33,17 +30,13 @@ import edu.jhu.hlt.stretcher.file.FormatDetector;
 public class DirectoryPersister implements Persister {
   private static final Logger LOGGER = LoggerFactory.getLogger(DirectoryPersister.class);
 
-  private final Path directory;
   private final ExecutorService executorService;
   private final ConcreteFiles helper;
   private final FilenameMapper mapper;
 
-  public DirectoryPersister(Path directory) throws IOException {
-    FileUtility.validateDirectory(directory);
-    FormatDetector detector = new FormatDetector(directory);
-    this.mapper = detector.getMapper();
-    this.helper = detector.getHelper();
-    this.directory = directory.toAbsolutePath();
+  public DirectoryPersister(FilenameMapper mapper, ConcreteFiles helper) throws IOException {
+    this.mapper = mapper;
+    this.helper = helper;
     this.executorService = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor());
   }
 
@@ -56,6 +49,7 @@ public class DirectoryPersister implements Persister {
     this.executorService.submit(() -> {
       try {
         helper.write(mapper.map(c.getId()), c);
+        LOGGER.debug("Saving " + c.getId());
       } catch (ConcreteException e) {
         LOGGER.warn("Unable to store " + c.getId(), e);
       }

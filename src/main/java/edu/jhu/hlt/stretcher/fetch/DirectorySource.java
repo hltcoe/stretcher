@@ -21,9 +21,7 @@ import org.slf4j.LoggerFactory;
 import edu.jhu.hlt.concrete.Communication;
 import edu.jhu.hlt.concrete.util.ConcreteException;
 import edu.jhu.hlt.stretcher.file.ConcreteFiles;
-import edu.jhu.hlt.stretcher.file.FileUtility;
 import edu.jhu.hlt.stretcher.file.FilenameMapper;
-import edu.jhu.hlt.stretcher.file.FormatDetector;
 
 /**
  * Load communications from a directory.
@@ -38,11 +36,9 @@ public class DirectorySource implements CommunicationSource {
   private final ConcreteFiles helper;
   private final FilenameMapper mapper;
 
-  public DirectorySource(Path directory) throws IOException {
-    FileUtility.validateDirectory(directory);
-    FormatDetector detector = new FormatDetector(directory);
-    this.mapper = detector.getMapper();
-    this.helper = detector.getHelper();
+  public DirectorySource(Path directory, FilenameMapper mapper, ConcreteFiles helper) throws IOException {
+    this.mapper = mapper;
+    this.helper = helper;
     this.directory = directory.toAbsolutePath();
   }
 

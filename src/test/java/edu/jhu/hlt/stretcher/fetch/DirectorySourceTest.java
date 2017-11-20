@@ -7,6 +7,7 @@ package edu.jhu.hlt.stretcher.fetch;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -21,6 +22,7 @@ import org.junit.rules.TemporaryFolder;
 import edu.jhu.hlt.concrete.Communication;
 import edu.jhu.hlt.stretcher.CommunicationUtility;
 import edu.jhu.hlt.stretcher.fetch.DirectorySource;
+import edu.jhu.hlt.stretcher.file.FormatDetector;
 
 public class DirectorySourceTest {
   public static TemporaryFolder folder = new TemporaryFolder();
@@ -45,22 +47,27 @@ public class DirectorySourceTest {
     folder.delete();
   }
 
+  private static DirectorySource getSource() throws IOException {
+    FormatDetector detector = new FormatDetector(root);
+    return new DirectorySource(root, detector.getMapper(), detector.getHelper());
+  }
+
   @Test
   public void testExists() throws Exception {
-    DirectorySource source = new DirectorySource(root);
+    CommunicationSource source = getSource();
     assertTrue(source.exists("1"));
     assertFalse(source.exists("0"));
   }
 
   @Test
   public void testSize() throws Exception {
-    DirectorySource source = new DirectorySource(root);
+    CommunicationSource source = getSource();
     assertEquals(4, source.size());
   }
 
   @Test
   public void testGetById() throws Exception {
-    DirectorySource source = new DirectorySource(root);
+    CommunicationSource source = getSource();
     Optional<Communication> comm = source.get("1");
     assertTrue(comm.isPresent());
     assertEquals("1", comm.get().getId());
@@ -69,14 +76,14 @@ public class DirectorySourceTest {
 
   @Test
   public void testGetByList() throws Exception {
-    DirectorySource source = new DirectorySource(root);
+    CommunicationSource source = getSource();
     List<Communication> list = source.get(Arrays.asList("0", "1", "2"));
     assertEquals(2, list.size());
   }
 
   @Test
   public void testGetIterator() throws Exception {
-    DirectorySource source = new DirectorySource(root);
+    CommunicationSource source = getSource();
     List<Communication> list = source.get(0, 2);
     assertEquals(2, list.size());
     assertEquals("1", list.get(0).getId());

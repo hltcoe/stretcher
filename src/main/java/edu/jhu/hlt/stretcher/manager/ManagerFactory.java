@@ -17,6 +17,11 @@ import edu.jhu.hlt.stretcher.Server;
 import edu.jhu.hlt.stretcher.fetch.CommunicationSource;
 import edu.jhu.hlt.stretcher.fetch.DirectorySource;
 import edu.jhu.hlt.stretcher.fetch.ZipSource;
+import edu.jhu.hlt.stretcher.file.FileUtility;
+import edu.jhu.hlt.stretcher.file.FilenameMapper;
+import edu.jhu.hlt.stretcher.file.FlatMapper;
+import edu.jhu.hlt.stretcher.file.FormatDetector;
+import edu.jhu.hlt.stretcher.file.GzConcreteFiles;
 import edu.jhu.hlt.stretcher.store.DirectoryPersister;
 import edu.jhu.hlt.stretcher.store.NoOpPersister;
 import edu.jhu.hlt.stretcher.store.Persister;
@@ -27,22 +32,46 @@ import edu.jhu.hlt.stretcher.store.Persister;
 public class ManagerFactory {
   private static Logger LOGGER = LoggerFactory.getLogger(ManagerFactory.class);
 
+  private static FormatDetector detector;
+
   public static Manager create(Server.Opts opts) throws IOException {
-    Manager manager = null;
+    CommunicationSource source = createSource(opts);
+    Persister persister = createPersister(opts);
+    return new LockingManager(source, persister);
+  }
 
-    Path path = Paths.get(opts.path);
+  private static CommunicationSource createSource(Server.Opts opts) throws IOException {
+    CommunicationSource source = null;
+    Path path = Paths.get(opts.inputPath);
     if (Files.isDirectory(path)) {
-      CommunicationSource source = new DirectorySource(path);
-      Persister persister = new DirectoryPersister(path);
-      manager = new LockingManager(source, persister);
-      LOGGER.info("Serving from the directory " + path.toString());
+      FileUtility.validateDirectory(path);
+      FormatDetector detector = new FormatDetector(path);
+      source = new DirectorySource(path, detector.getMapper(), detector.getHelper());
+      LOGGER.info("Fetch running on the directory " + path.toString());
     } else {
-      CommunicationSource source = new ZipSource(path);
-      Persister persister = new NoOpPersister();
-      manager = new LockingManager(source, persister);
-      LOGGER.info("Serving from the zip file " + path.toString());
+      source = new ZipSource(path);
+      LOGGER.info("Fetch running on the zip file " + path.toString());
     }
+    return source;
+  }
 
-    return manager;
+  private static Persister createPersister(Server.Opts opts) throws IOException {
+    Persister persister = null;
+    Path path = Paths.get(opts.outputPath);
+    if (Files.isDirectory(path)) {
+      FileUtility.validateDirectory(path);
+      if (detector != null) {
+        FilenameMapper mapper = new FlatMapper(path, detector.getExtension());
+        persister = new DirectoryPersister(mapper, detector.getHelper());
+      } else {
+        // default to gz compressed
+        persister = new DirectoryPersister(new FlatMapper(path, "gz"), new GzConcreteFiles());
+      }
+      LOGGER.info("Store running on the directory " + path.toString());
+    } else {
+      persister = new NoOpPersister();
+      LOGGER.info("Store is not running");
+    }
+    return persister;
   }
 }

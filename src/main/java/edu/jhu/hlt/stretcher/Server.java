@@ -64,9 +64,12 @@ public class Server {
     @Parameter(names = {"--sp"}, description = "The port for store.")
     public int storePort = 9091;
 
-    @Parameter(names = {"--path", "-p"}, required = true,
-                    description = "Path to a directory with Concrete files or an archive file.")
-    public String path = "/tmp/";
+    @Parameter(names = {"--input", "-i"}, required = true,
+                    description = "Path for fetch; a directory with Concrete files or an archive file.")
+    public String inputPath;
+
+    @Parameter(names = {"--output", "-o"}, description = "Path for store (defaults to same as input).")
+    public String outputPath;
 
     @Parameter(names = {"--help", "-h"}, help = true,
                     description = "Print the usage information and exit.")
@@ -86,6 +89,10 @@ public class Server {
     if (opts.help) {
         jc.usage();
         return;
+    }
+
+    if (opts.outputPath == null) {
+      opts.outputPath = opts.inputPath;
     }
 
     // initialize the server

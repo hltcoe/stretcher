@@ -17,6 +17,8 @@ import org.junit.rules.TemporaryFolder;
 
 import edu.jhu.hlt.concrete.Communication;
 import edu.jhu.hlt.stretcher.CommunicationUtility;
+import edu.jhu.hlt.stretcher.file.FlatMapper;
+import edu.jhu.hlt.stretcher.file.UncompressedConcreteFiles;
 import edu.jhu.hlt.stretcher.store.DirectoryPersister;
 import edu.jhu.hlt.stretcher.store.Persister;
 
@@ -37,7 +39,7 @@ public class DirectoryPersisterTest {
 
   @Ignore
   public void testStore() throws Exception {
-    Persister persister = new DirectoryPersister(root);
+    Persister persister = new DirectoryPersister(new FlatMapper(root, "comm"), new UncompressedConcreteFiles());
     Communication c = CommunicationUtility.create("99", "store test");
     persister.store(c);
     //Thread.sleep(100);

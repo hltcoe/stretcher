@@ -17,14 +17,18 @@ Note: using a zip archive is read-only. The store service will drop changes.
 
 Stretcher automatically detects the format of the data given a path to a directory or file.
 
-Serve files from the directory /data on the default 9090 port:
+To run fetch and store from the directory /data on the default 9090 and 9091 ports:
 ```
-./start.sh --path /data/
+./start.sh --input /data/
+```
+To not overwrite the original communication files:
+```
+./start.sh --input /data/input/ --output /data/output/
 ```
 
-Serve Concrete objects from a zip file on port 8888:
+Serve Concrete objects from a zip file with fetch on port 8888:
 ```
-./start.sh --path twitter.zip --fp 8888
+./start.sh --input twitter.zip --fp 8888
 ```
 
 
@@ -36,5 +40,5 @@ docker build -t hltcoe/stretcher .
 
 To run the application with fetch on 8888 and store on 8989 out of the directory /opt/my_data:
 ```
-docker run -d -v /opt/my_data:/data -p 8888:9090 -p 8989:9091 hltcoe/stretcher --path /data
+docker run -d -v /opt/my_data:/data -p 8888:9090 -p 8989:9091 hltcoe/stretcher --input /data
 ```
