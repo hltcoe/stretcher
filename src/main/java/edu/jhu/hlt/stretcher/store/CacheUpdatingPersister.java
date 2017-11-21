@@ -6,8 +6,7 @@
 package edu.jhu.hlt.stretcher.store;
 
 import edu.jhu.hlt.concrete.Communication;
-import edu.jhu.hlt.stretcher.fetch.CachingSource;
-import edu.jhu.hlt.stretcher.fetch.CommunicationSource;
+import edu.jhu.hlt.stretcher.cache.CachingSource;
 
 /**
  * Updates the source cache on calls to store.
@@ -17,7 +16,7 @@ public class CacheUpdatingPersister implements Persister {
   private final Persister persister;
   private final CachingSource source;
 
-  public CacheUpdatingPersister(Persister persister, CommunicationSource source) {
+  public CacheUpdatingPersister(Persister persister, CachingSource source) {
     this.persister = persister;
     if (source instanceof CachingSource) {
       this.source = (CachingSource)source;

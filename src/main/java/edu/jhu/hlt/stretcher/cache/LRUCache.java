@@ -1,4 +1,9 @@
-package edu.jhu.hlt.stretcher.fetch;
+/*
+ * Copyright 2012-2017 Johns Hopkins University HLTCOE. All rights reserved.
+ * This software is released under the 2-clause BSD license.
+ * See LICENSE in the project root directory.
+ */
+package edu.jhu.hlt.stretcher.cache;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,29 +16,21 @@ import org.slf4j.LoggerFactory;
 import com.google.common.cache.CacheBuilder;
 
 import edu.jhu.hlt.concrete.Communication;
+import edu.jhu.hlt.stretcher.fetch.CommunicationSource;
 
-/**
- * Caching wrapper for a communication source.
- *
- * Use this if you expect access patterns will result in the same communications
- * requested over a short period of time.
- * If the source and persister are using the same directory or file, the update()
- * should be called to update the cache.
- */
-public class CachingSource implements CommunicationSource {
-  private static final Logger LOGGER = LoggerFactory.getLogger(CachingSource.class);
+public class LRUCache extends AbstractCachingSource {
+  private static final Logger LOGGER = LoggerFactory.getLogger(LRUCache.class);
 
   private static final long DEFAULT_MAX_SIZE = 1000L;
 
-  private final CommunicationSource source;
   private final ConcurrentMap<String, Communication> cache;
 
-  public CachingSource(CommunicationSource source) {
+  public LRUCache(CommunicationSource source) {
     this(source, DEFAULT_MAX_SIZE);
   }
 
-  public CachingSource(CommunicationSource source, long size) {
-    this.source = source;
+  public LRUCache(CommunicationSource source, long size) {
+    super(source);
     this.cache = CacheBuilder.newBuilder().maximumSize(size).<String, Communication>build().asMap();
   }
 
@@ -101,6 +98,10 @@ public class CachingSource implements CommunicationSource {
     return source.get(offset, nToGet);
   }
 
+  /*
+   * (non-Javadoc)
+   * @see edu.jhu.hlt.stretcher.cache.CachingSource#update(edu.jhu.hlt.concrete.Communication)
+   */
   public void update(Communication c) {
     cache.replace(c.getId(), c);
   }

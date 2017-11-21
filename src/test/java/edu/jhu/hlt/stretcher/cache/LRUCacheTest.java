@@ -3,7 +3,7 @@
  * This software is released under the 2-clause BSD license.
  * See LICENSE in the project root directory.
  */
-package edu.jhu.hlt.stretcher.fetch;
+package edu.jhu.hlt.stretcher.cache;
 
 import static org.junit.Assert.*;
 
@@ -16,10 +16,10 @@ import org.junit.Test;
 
 import edu.jhu.hlt.concrete.Communication;
 import edu.jhu.hlt.stretcher.CommunicationUtility;
-import edu.jhu.hlt.stretcher.fetch.CachingSource;
 import edu.jhu.hlt.stretcher.fetch.CommunicationSource;
+import edu.jhu.hlt.stretcher.fetch.MemorySource;
 
-public class CachingSourceTest {
+public class LRUCacheTest {
 
   private Map<String, Communication> map =
           Collections.synchronizedMap(new HashMap<String, Communication>());
@@ -36,29 +36,30 @@ public class CachingSourceTest {
 
   @Test
   public void testExists() {
-    CommunicationSource source = new CachingSource(new MemorySource(map));
+    CommunicationSource source = new LRUCache(new MemorySource(map));
     assertTrue(source.exists("2"));
     assertFalse(source.exists("0"));
   }
 
   @Test
   public void testSize() {
-    CommunicationSource source = new CachingSource(new MemorySource(map));
+    CommunicationSource source = new LRUCache(new MemorySource(map));
     assertEquals(map.size(), source.size());
   }
 
   @Test
   public void testGet() {
-    CommunicationSource source = new CachingSource(new MemorySource(map));
+    CommunicationSource source = new LRUCache(new MemorySource(map));
     assertEquals(map.get("3"), source.get("3").get());
     assertFalse(source.get("0").isPresent());
   }
 
   @Test
   public void testUpdate() {
-    CachingSource source = new CachingSource(new MemorySource(map));
+    CachingSource source = new LRUCache(new MemorySource(map));
     assertEquals(map.get("4"), source.get("4").get());
     source.update(CommunicationUtility.create("4", "New"));
     assertEquals("New", source.get("4").get().getText());
   }
+
 }
