@@ -10,6 +10,8 @@ import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import com.typesafe.config.Config;
+
 import edu.jhu.hlt.concrete.Communication;
 import edu.jhu.hlt.stretcher.fetch.CommunicationSource;
 import edu.jhu.hlt.stretcher.store.Persister;
@@ -25,7 +27,7 @@ public class LockingManager implements Manager {
   private final Persister storage;
   private final Lock lock;
 
-  public LockingManager(CommunicationSource source, Persister storage) {
+  public LockingManager(CommunicationSource source, Persister storage, Config config) {
     this.lock = new ReentrantLock();
     this.src = source;
     this.storage = storage;
@@ -72,7 +74,7 @@ public class LockingManager implements Manager {
   }
 
   @Override
-  public void update(Communication updated) {
+  public void store(Communication updated) {
     lock.lock();
     storage.store(updated);
     lock.unlock();

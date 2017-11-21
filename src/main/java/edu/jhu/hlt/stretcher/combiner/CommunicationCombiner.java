@@ -12,6 +12,9 @@ import edu.jhu.hlt.concrete.Communication;
  *
  * The objects are instances of the same communication.
  * They may have different annotations that need to be combined/selected.
+ *
+ * The constructor must accept one parameter:
+ *  - Config
  */
 public interface CommunicationCombiner {
   /**

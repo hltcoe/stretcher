@@ -5,9 +5,13 @@
  */
 package edu.jhu.hlt.stretcher.filter;
 
+import com.typesafe.config.Config;
+
 import edu.jhu.hlt.concrete.Communication;
 
 public class NoOpFilter implements CommunicationFilter {
+
+  public NoOpFilter(Config config) {}
 
   /*
    * (non-Javadoc)

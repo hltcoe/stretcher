@@ -5,12 +5,16 @@
  */
 package edu.jhu.hlt.stretcher.combiner;
 
+import com.typesafe.config.Config;
+
 import edu.jhu.hlt.concrete.Communication;
 
 /**
- * Save only the annotations from c2
+ * Save only the annotations from latest store request
  */
 public class OverwriteCombiner implements CommunicationCombiner {
+
+  public OverwriteCombiner(Config config) {}
 
   /*
    * (non-Javadoc)

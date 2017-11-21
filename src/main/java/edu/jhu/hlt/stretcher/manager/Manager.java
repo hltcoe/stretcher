@@ -5,19 +5,23 @@
  */
 package edu.jhu.hlt.stretcher.manager;
 
-import edu.jhu.hlt.concrete.Communication;
 import edu.jhu.hlt.concrete.access.FetchCommunicationService;
 import edu.jhu.hlt.concrete.access.StoreCommunicationService;
 import edu.jhu.hlt.stretcher.FetchImpl;
 import edu.jhu.hlt.stretcher.StoreImpl;
 import edu.jhu.hlt.stretcher.fetch.CommunicationSource;
+import edu.jhu.hlt.stretcher.store.Persister;
 
 /**
- * for the storage layer (as well as fetch/storage hybrids),
- * provide a way to manage communications coming in
+ * Manage fetch and store requests.
+ *
+ * The manager wraps a communication source and a store persister.
+ * The constructor must take three arguments:
+ *  - CommunicationSource
+ *  - Persister
+ *  - Config
  */
-public interface Manager extends CommunicationSource, AutoCloseable {
-  public void update(Communication updated);
+public interface Manager extends CommunicationSource, Persister, AutoCloseable {
 
   default StoreCommunicationService.Iface getStoreImpl() {
     return new StoreImpl(this);

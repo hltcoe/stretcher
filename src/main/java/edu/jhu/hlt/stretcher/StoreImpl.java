@@ -32,9 +32,8 @@ public class StoreImpl implements StoreCommunicationService.Iface, AutoCloseable
   }
 
   @Override
-  public void store(Communication arg0) throws ServicesException, TException {
-    // pass the buck
-    this.mgr.update(arg0);
+  public void store(Communication c) throws ServicesException, TException {
+    this.mgr.store(c);
   }
 
   @Override

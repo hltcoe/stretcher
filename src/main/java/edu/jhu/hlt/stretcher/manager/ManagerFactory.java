@@ -13,6 +13,9 @@ import java.nio.file.Paths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
+
 import edu.jhu.hlt.stretcher.Server;
 import edu.jhu.hlt.stretcher.fetch.CommunicationSource;
 import edu.jhu.hlt.stretcher.fetch.DirectorySource;
@@ -35,9 +38,10 @@ public class ManagerFactory {
   private static FormatDetector detector;
 
   public static Manager create(Server.Opts opts) throws IOException {
+    Config config = loadConfig();
     CommunicationSource source = createSource(opts);
     Persister persister = createPersister(opts);
-    return new LockingManager(source, persister);
+    return new LockingManager(source, persister, config);
   }
 
   private static CommunicationSource createSource(Server.Opts opts) throws IOException {
@@ -74,4 +78,10 @@ public class ManagerFactory {
     }
     return persister;
   }
+
+  private static Config loadConfig() {
+    Config defaultConfig = ConfigFactory.load();
+    return defaultConfig;
+  }
+
 }

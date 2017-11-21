@@ -9,6 +9,9 @@ import edu.jhu.hlt.concrete.Communication;
 
 /**
  * Remove data from a communication that is not required.
+ *
+ * The constructor must accept one parameter:
+ *  - Config
  */
 public interface CommunicationFilter {
   /**
