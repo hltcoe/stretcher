@@ -5,44 +5,50 @@
  */
 package edu.jhu.hlt.stretcher.cache;
 
-import java.util.Optional;
+import com.typesafe.config.Config;
 
 import edu.jhu.hlt.concrete.Communication;
-import edu.jhu.hlt.stretcher.fetch.CommunicationSource;
 
 /**
- * Pass through that does not implement any caching.
+ * A cache that doesn't cache.
  */
-public class NoOpCache extends AbstractCachingSource {
+public class NoOpCache implements Cache {
 
-  public NoOpCache(CommunicationSource source) {
-    super(source);
-  }
+  public NoOpCache(Config config) {}
 
   /*
    * (non-Javadoc)
    *
-   * @see edu.jhu.hlt.stretcher.source.CommunicationSource#exists(java.lang.String)
+   * @see edu.jhu.hlt.stretcher.cache.Cache#exists(java.lang.String)
    */
   @Override
   public boolean exists(String id) {
-    return source.exists(id);
+    return false;
   }
 
   /*
    * (non-Javadoc)
    *
-   * @see edu.jhu.hlt.stretcher.source.CommunicationSource#get(java.lang.String)
+   * @see edu.jhu.hlt.stretcher.cache.Cache#get(java.lang.String)
    */
   @Override
-  public Optional<Communication> get(String id) {
-    return source.get(id);
+  public Communication get(String id) {
+    return null;
   }
 
   /*
    * (non-Javadoc)
-   * @see edu.jhu.hlt.stretcher.cache.CachingSource#update(edu.jhu.hlt.concrete.Communication)
+   *
+   * @see edu.jhu.hlt.stretcher.cache.Cache#put(java.lang.String, edu.jhu.hlt.concrete.Communication)
    */
-  public void update(Communication c) {}
+  @Override
+  public void put(String id, Communication c) {}
 
+  /*
+   * (non-Javadoc)
+   *
+   * @see edu.jhu.hlt.stretcher.cache.Cache#replace(java.lang.String, edu.jhu.hlt.concrete.Communication)
+   */
+  @Override
+  public void replace(String id, Communication c) {}
 }

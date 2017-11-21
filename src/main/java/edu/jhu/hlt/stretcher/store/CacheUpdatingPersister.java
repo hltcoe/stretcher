@@ -6,7 +6,7 @@
 package edu.jhu.hlt.stretcher.store;
 
 import edu.jhu.hlt.concrete.Communication;
-import edu.jhu.hlt.stretcher.cache.CachingSource;
+import edu.jhu.hlt.stretcher.fetch.CachingSource;
 
 /**
  * Updates the source cache on calls to store.

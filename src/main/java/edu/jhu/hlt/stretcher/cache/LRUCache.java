@@ -5,105 +5,70 @@
  */
 package edu.jhu.hlt.stretcher.cache;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentMap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.cache.CacheBuilder;
+import com.typesafe.config.Config;
 
 import edu.jhu.hlt.concrete.Communication;
-import edu.jhu.hlt.stretcher.fetch.CommunicationSource;
 
-public class LRUCache extends AbstractCachingSource {
-  private static final Logger LOGGER = LoggerFactory.getLogger(LRUCache.class);
+/**
+ * Thread-safe least recently used memory cache.
+ *
+ * Config parameters:
+ *  - size
+ */
+public class LRUCache implements Cache {
 
   private static final long DEFAULT_MAX_SIZE = 1000L;
 
   private final ConcurrentMap<String, Communication> cache;
 
-  public LRUCache(CommunicationSource source) {
-    this(source, DEFAULT_MAX_SIZE);
-  }
-
-  public LRUCache(CommunicationSource source, long size) {
-    super(source);
+  public LRUCache(Config config) {
+    long size = DEFAULT_MAX_SIZE;
+    if (config.hasPath("size")) {
+      size = config.getLong("size");
+    }
     this.cache = CacheBuilder.newBuilder().maximumSize(size).<String, Communication>build().asMap();
   }
 
   /*
    * (non-Javadoc)
    *
-   * @see edu.jhu.hlt.stretcher.source.CommunicationSource#exists(java.lang.String)
+   * @see edu.jhu.hlt.stretcher.cache.Cache#exists(java.lang.String)
    */
   @Override
   public boolean exists(String id) {
-    return cache.containsKey(id) || source.exists(id);
+    return cache.containsKey(id);
   }
 
   /*
    * (non-Javadoc)
    *
-   * @see edu.jhu.hlt.stretcher.source.CommunicationSource#size()
+   * @see edu.jhu.hlt.stretcher.cache.Cache#get(java.lang.String)
    */
   @Override
-  public int size() {
-    return source.size();
+  public Communication get(String id) {
+    return cache.get(id);
   }
 
   /*
    * (non-Javadoc)
    *
-   * @see edu.jhu.hlt.stretcher.source.CommunicationSource#get(java.lang.String)
+   * @see edu.jhu.hlt.stretcher.cache.Cache#put(java.lang.String, edu.jhu.hlt.concrete.Communication)
    */
   @Override
-  public Optional<Communication> get(String id) {
-    Communication c = cache.get(id);
-    if (c != null) {
-      LOGGER.debug("Cache hit for " + id);
-      return Optional.of(c);
-    } else {
-      Optional<Communication> opt = source.get(id);
-      if (opt.isPresent()) {
-        cache.put(id, opt.get());
-      }
-      return opt;
-    }
+  public void put(String id, Communication c) {
+    cache.put(id, c);
   }
 
   /*
    * (non-Javadoc)
    *
-   * @see edu.jhu.hlt.stretcher.source.CommunicationSource#get(java.util.List)
+   * @see edu.jhu.hlt.stretcher.cache.Cache#replace(java.lang.String, edu.jhu.hlt.concrete.Communication)
    */
   @Override
-  public List<Communication> get(List<String> ids) {
-    List<Communication> comms = new ArrayList<Communication>();
-    for (String id : ids) {
-      this.get(id).ifPresent(comms::add);
-    }
-    LOGGER.info("Returning " + comms.size() + " communications");
-    return comms;
+  public void replace(String id, Communication c) {
+    cache.replace(id, c);
   }
-
-  /*
-   * (non-Javadoc)
-   * @see edu.jhu.hlt.stretcher.source.CommunicationSource#get(long, long)
-   */
-  @Override
-  public List<Communication> get(long offset, long nToGet) {
-    return source.get(offset, nToGet);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see edu.jhu.hlt.stretcher.cache.CachingSource#update(edu.jhu.hlt.concrete.Communication)
-   */
-  public void update(Communication c) {
-    cache.replace(c.getId(), c);
-  }
-
 }

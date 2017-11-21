@@ -3,7 +3,7 @@
  * This software is released under the 2-clause BSD license.
  * See LICENSE in the project root directory.
  */
-package edu.jhu.hlt.stretcher.cache;
+package edu.jhu.hlt.stretcher.fetch;
 
 import static org.junit.Assert.*;
 
@@ -14,12 +14,14 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.typesafe.config.ConfigFactory;
+
 import edu.jhu.hlt.concrete.Communication;
 import edu.jhu.hlt.stretcher.CommunicationUtility;
+import edu.jhu.hlt.stretcher.cache.LRUCache;
 import edu.jhu.hlt.stretcher.fetch.CommunicationSource;
-import edu.jhu.hlt.stretcher.fetch.MemorySource;
 
-public class LRUCacheTest {
+public class CachingSourceTest {
 
   private Map<String, Communication> map =
           Collections.synchronizedMap(new HashMap<String, Communication>());
@@ -34,29 +36,34 @@ public class LRUCacheTest {
     map.put("5", CommunicationUtility.create("5", "test 5"));
   }
 
+  private CachingSource getSource() {
+    // we don't need any configuration to run unit test
+    return new CachingSource(new MemorySource(map), new LRUCache(ConfigFactory.defaultOverrides()));
+  }
+
   @Test
   public void testExists() {
-    CommunicationSource source = new LRUCache(new MemorySource(map));
+    CommunicationSource source = getSource();
     assertTrue(source.exists("2"));
     assertFalse(source.exists("0"));
   }
 
   @Test
   public void testSize() {
-    CommunicationSource source = new LRUCache(new MemorySource(map));
+    CommunicationSource source = getSource();
     assertEquals(map.size(), source.size());
   }
 
   @Test
   public void testGet() {
-    CommunicationSource source = new LRUCache(new MemorySource(map));
+    CommunicationSource source = getSource();
     assertEquals(map.get("3"), source.get("3").get());
     assertFalse(source.get("0").isPresent());
   }
 
   @Test
   public void testUpdate() {
-    CachingSource source = new LRUCache(new MemorySource(map));
+    CachingSource source = getSource();
     assertEquals(map.get("4"), source.get("4").get());
     source.update(CommunicationUtility.create("4", "New"));
     assertEquals("New", source.get("4").get().getText());
