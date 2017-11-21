@@ -18,6 +18,7 @@ import edu.jhu.hlt.concrete.services.NotImplementedException;
 import edu.jhu.hlt.concrete.services.ServiceInfo;
 import edu.jhu.hlt.concrete.services.ServicesException;
 import edu.jhu.hlt.stretcher.manager.Manager;
+import edu.jhu.hlt.stretcher.util.ServiceUtil;
 
 public class FetchImpl implements FetchCommunicationService.Iface, AutoCloseable {
 
@@ -29,7 +30,7 @@ public class FetchImpl implements FetchCommunicationService.Iface, AutoCloseable
 
   @Override
   public ServiceInfo about() throws TException {
-    return Util.serviceInfo();
+    return ServiceUtil.serviceInfo();
   }
 
   @Override

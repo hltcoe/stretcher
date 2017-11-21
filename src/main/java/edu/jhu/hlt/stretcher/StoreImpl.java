@@ -12,6 +12,7 @@ import edu.jhu.hlt.concrete.access.StoreCommunicationService;
 import edu.jhu.hlt.concrete.services.ServiceInfo;
 import edu.jhu.hlt.concrete.services.ServicesException;
 import edu.jhu.hlt.stretcher.manager.Manager;
+import edu.jhu.hlt.stretcher.util.ServiceUtil;
 
 public class StoreImpl implements StoreCommunicationService.Iface, AutoCloseable {
 
@@ -23,7 +24,7 @@ public class StoreImpl implements StoreCommunicationService.Iface, AutoCloseable
 
   @Override
   public ServiceInfo about() throws TException {
-    return Util.serviceInfo();
+    return ServiceUtil.serviceInfo();
   }
 
   @Override
