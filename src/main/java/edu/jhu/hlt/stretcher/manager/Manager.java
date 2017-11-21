@@ -5,6 +5,8 @@
  */
 package edu.jhu.hlt.stretcher.manager;
 
+import com.typesafe.config.Config;
+
 import edu.jhu.hlt.concrete.access.FetchCommunicationService;
 import edu.jhu.hlt.concrete.access.StoreCommunicationService;
 import edu.jhu.hlt.stretcher.FetchImpl;
@@ -22,6 +24,8 @@ import edu.jhu.hlt.stretcher.store.Persister;
  *  - Config
  */
 public interface Manager extends CommunicationSource, Persister, AutoCloseable {
+
+  public void initialize(CommunicationSource source, Persister persister, Config config);
 
   default StoreCommunicationService.Iface getStoreImpl() {
     return new StoreImpl(this);

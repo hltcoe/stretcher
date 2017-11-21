@@ -28,6 +28,7 @@ import edu.jhu.hlt.stretcher.file.GzConcreteFiles;
 import edu.jhu.hlt.stretcher.store.DirectoryPersister;
 import edu.jhu.hlt.stretcher.store.NoOpPersister;
 import edu.jhu.hlt.stretcher.store.Persister;
+import edu.jhu.hlt.stretcher.util.DependencyLoader;
 
 /**
  * Constructs the manager based on configuration and command line options.
@@ -39,9 +40,10 @@ public class ManagerFactory {
 
   public static Manager create(Server.Opts opts) throws IOException {
     Config config = loadConfig();
+    DependencyLoader loader = new DependencyLoader(config);
     CommunicationSource source = createSource(opts);
     Persister persister = createPersister(opts);
-    return new LockingManager(source, persister, config);
+    return loader.getManager(source, persister);
   }
 
   private static CommunicationSource createSource(Server.Opts opts) throws IOException {

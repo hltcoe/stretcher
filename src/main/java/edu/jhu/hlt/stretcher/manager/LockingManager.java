@@ -23,14 +23,15 @@ import edu.jhu.hlt.stretcher.store.Persister;
  */
 public class LockingManager implements Manager {
 
-  private final CommunicationSource src;
-  private final Persister storage;
-  private final Lock lock;
+  private CommunicationSource src;
+  private Persister storage;
+  private Lock lock;
 
-  public LockingManager(CommunicationSource source, Persister storage, Config config) {
+  @Override
+  public void initialize(CommunicationSource source, Persister persister, Config config) {
     this.lock = new ReentrantLock();
     this.src = source;
-    this.storage = storage;
+    this.storage = persister;
   }
 
   @Override
