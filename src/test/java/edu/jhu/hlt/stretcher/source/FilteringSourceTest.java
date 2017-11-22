@@ -3,7 +3,7 @@
  * This software is released under the 2-clause BSD license.
  * See LICENSE in the project root directory.
  */
-package edu.jhu.hlt.stretcher.fetch;
+package edu.jhu.hlt.stretcher.source;
 
 import static org.junit.Assert.*;
 
@@ -19,9 +19,7 @@ import com.typesafe.config.ConfigFactory;
 
 import edu.jhu.hlt.concrete.Communication;
 import edu.jhu.hlt.stretcher.CommunicationUtility;
-import edu.jhu.hlt.stretcher.fetch.CommunicationSource;
-import edu.jhu.hlt.stretcher.fetch.FilteringSource;
-import edu.jhu.hlt.stretcher.filter.CommunicationFilter;
+import edu.jhu.hlt.stretcher.filter.Filter;
 
 public class FilteringSourceTest {
 
@@ -40,13 +38,13 @@ public class FilteringSourceTest {
 
   @Test
   public void test() {
-    CommunicationFilter filter = new DeleteFilter();
+    Filter filter = new DeleteFilter();
     filter.initialize(ConfigFactory.empty());
-    CommunicationSource source = new FilteringSource(new MemorySource(map), filter);
+    Source source = new FilteringSource(new MemorySource(map), filter);
     assertEquals("", source.get("1").get().getText());
   }
 
-  private class DeleteFilter implements CommunicationFilter {
+  private class DeleteFilter implements Filter {
     public void initialize(Config config) {}
     public void filter(Communication c) {
       c.setText("");

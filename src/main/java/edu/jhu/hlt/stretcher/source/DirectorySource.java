@@ -3,7 +3,7 @@
  * This software is released under the 2-clause BSD license.
  * See LICENSE in the project root directory.
  */
-package edu.jhu.hlt.stretcher.fetch;
+package edu.jhu.hlt.stretcher.source;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -29,7 +29,7 @@ import edu.jhu.hlt.stretcher.file.FilenameMapper;
  * Requires that all communications have the same filename structure.
  * Requires that all files in the directory are communications.
  */
-public class DirectorySource implements CommunicationSource {
+public class DirectorySource implements Source {
   private static final Logger LOGGER = LoggerFactory.getLogger(DirectorySource.class);
 
   private final Path directory;
@@ -45,7 +45,7 @@ public class DirectorySource implements CommunicationSource {
   /*
    * (non-Javadoc)
    *
-   * @see edu.jhu.hlt.stretcher.source.CommunicationSource#exists(java.lang.String)
+   * @see edu.jhu.hlt.stretcher.source.Source#exists(java.lang.String)
    */
   @Override
   public boolean exists(String id) {
@@ -55,7 +55,7 @@ public class DirectorySource implements CommunicationSource {
   /*
    * (non-Javadoc)
    *
-   * @see edu.jhu.hlt.stretcher.source.CommunicationSource#size()
+   * @see edu.jhu.hlt.stretcher.source.Source#size()
    */
   @Override
   public int size() {
@@ -74,7 +74,7 @@ public class DirectorySource implements CommunicationSource {
   /*
    * (non-Javadoc)
    *
-   * @see edu.jhu.hlt.stretcher.source.CommunicationSource#get(java.lang.String)
+   * @see edu.jhu.hlt.stretcher.source.Source#get(java.lang.String)
    */
   @Override
   public Optional<Communication> get(String id) {
@@ -84,7 +84,7 @@ public class DirectorySource implements CommunicationSource {
   /*
    * (non-Javadoc)
    *
-   * @see edu.jhu.hlt.stretcher.source.CommunicationSource#get(java.util.List)
+   * @see edu.jhu.hlt.stretcher.source.Source#get(java.util.List)
    */
   @Override
   public List<Communication> get(List<String> ids) {
@@ -98,7 +98,7 @@ public class DirectorySource implements CommunicationSource {
 
   /*
    * (non-Javadoc)
-   * @see edu.jhu.hlt.stretcher.source.CommunicationSource#get(long, long)
+   * @see edu.jhu.hlt.stretcher.source.Source#get(long, long)
    */
   @Override
   public List<Communication> get(long offset, long nToGet) {

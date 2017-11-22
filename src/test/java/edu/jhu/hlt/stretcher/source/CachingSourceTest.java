@@ -3,7 +3,7 @@
  * This software is released under the 2-clause BSD license.
  * See LICENSE in the project root directory.
  */
-package edu.jhu.hlt.stretcher.fetch;
+package edu.jhu.hlt.stretcher.source;
 
 import static org.junit.Assert.*;
 
@@ -20,7 +20,6 @@ import edu.jhu.hlt.concrete.Communication;
 import edu.jhu.hlt.stretcher.CommunicationUtility;
 import edu.jhu.hlt.stretcher.cache.Cache;
 import edu.jhu.hlt.stretcher.cache.LRUCache;
-import edu.jhu.hlt.stretcher.fetch.CommunicationSource;
 
 public class CachingSourceTest {
 
@@ -46,20 +45,20 @@ public class CachingSourceTest {
 
   @Test
   public void testExists() {
-    CommunicationSource source = getSource();
+    Source source = getSource();
     assertTrue(source.exists("2"));
     assertFalse(source.exists("0"));
   }
 
   @Test
   public void testSize() {
-    CommunicationSource source = getSource();
+    Source source = getSource();
     assertEquals(map.size(), source.size());
   }
 
   @Test
   public void testGet() {
-    CommunicationSource source = getSource();
+    Source source = getSource();
     assertEquals(map.get("3"), source.get("3").get());
     assertFalse(source.get("0").isPresent());
   }

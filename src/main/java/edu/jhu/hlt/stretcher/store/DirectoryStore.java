@@ -21,20 +21,19 @@ import edu.jhu.hlt.stretcher.file.ConcreteFiles;
 import edu.jhu.hlt.stretcher.file.FilenameMapper;
 
 /**
- * Thread-safe persister.
+ * Thread-safe store that saves to a directory.
  *
- * Saves the communications in a directory.
  * There is a single worker thread that reads from a queue.
  * This overwrites an existing file when store is called.
  */
-public class DirectoryPersister implements Persister {
-  private static final Logger LOGGER = LoggerFactory.getLogger(DirectoryPersister.class);
+public class DirectoryStore implements Store {
+  private static final Logger LOGGER = LoggerFactory.getLogger(DirectoryStore.class);
 
   private final ExecutorService executorService;
   private final ConcreteFiles helper;
   private final FilenameMapper mapper;
 
-  public DirectoryPersister(FilenameMapper mapper, ConcreteFiles helper) throws IOException {
+  public DirectoryStore(FilenameMapper mapper, ConcreteFiles helper) throws IOException {
     this.mapper = mapper;
     this.helper = helper;
     this.executorService = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor());
@@ -42,10 +41,10 @@ public class DirectoryPersister implements Persister {
 
   /*
    * (non-Javadoc)
-   * @see edu.jhu.hlt.stretcher.storage.Persister#store(edu.jhu.hlt.concrete.Communication)
+   * @see edu.jhu.hlt.stretcher.storage.Store#save(edu.jhu.hlt.concrete.Communication)
    */
   @Override
-  public void store(Communication c) {
+  public void save(Communication c) {
     this.executorService.submit(() -> {
       try {
         helper.write(mapper.map(c.getId()), c);

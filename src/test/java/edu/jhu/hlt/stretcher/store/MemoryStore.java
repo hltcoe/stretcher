@@ -9,9 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.jhu.hlt.concrete.Communication;
-import edu.jhu.hlt.stretcher.store.Persister;
 
-public class MemoryPersister implements Persister {
+public class MemoryStore implements Store {
 
   private final Map<String, Communication> store = new HashMap<>();
 
@@ -20,7 +19,7 @@ public class MemoryPersister implements Persister {
   }
 
   @Override
-  public void store(Communication c) {
+  public void save(Communication c) {
     store.put(c.getId(), c);
   }
 

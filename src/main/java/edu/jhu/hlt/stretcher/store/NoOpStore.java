@@ -10,15 +10,15 @@ import org.slf4j.LoggerFactory;
 
 import edu.jhu.hlt.concrete.Communication;
 
-public class NoOpPersister implements Persister {
-  private static final Logger LOGGER = LoggerFactory.getLogger(NoOpPersister.class);
+public class NoOpStore implements Store {
+  private static final Logger LOGGER = LoggerFactory.getLogger(NoOpStore.class);
 
   /*
    * (non-Javadoc)
-   * @see edu.jhu.hlt.stretcher.storage.Persister#store(edu.jhu.hlt.concrete.Communication)
+   * @see edu.jhu.hlt.stretcher.storage.Store#save(edu.jhu.hlt.concrete.Communication)
    */
   @Override
-  public void store(Communication c) {
+  public void save(Communication c) {
     LOGGER.info("Received for storing: " + c.getId());
   }
 

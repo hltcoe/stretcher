@@ -3,7 +3,7 @@
  * This software is released under the 2-clause BSD license.
  * See LICENSE in the project root directory.
  */
-package edu.jhu.hlt.stretcher.fetch;
+package edu.jhu.hlt.stretcher.source;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,7 +21,7 @@ import edu.jhu.hlt.concrete.Communication;
 import edu.jhu.hlt.concrete.serialization.CompactCommunicationSerializer;
 import edu.jhu.hlt.concrete.util.ConcreteException;
 
-public class ZipSource implements CommunicationSource, AutoCloseable {
+public class ZipSource implements Source, AutoCloseable {
 
   private ZipFile zf;
   private String extension = "comm";

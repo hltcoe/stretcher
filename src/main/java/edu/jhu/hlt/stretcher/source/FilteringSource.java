@@ -3,7 +3,7 @@
  * This software is released under the 2-clause BSD license.
  * See LICENSE in the project root directory.
  */
-package edu.jhu.hlt.stretcher.fetch;
+package edu.jhu.hlt.stretcher.source;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,20 +13,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.jhu.hlt.concrete.Communication;
-import edu.jhu.hlt.stretcher.filter.CommunicationFilter;
+import edu.jhu.hlt.stretcher.filter.Filter;
 
 /**
- * Filter communications before returning.
+ * Filter communications before sending a response.
  *
  * Use before CachingSource in a cascade.
  */
-public class FilteringSource implements CommunicationSource {
+public class FilteringSource implements Source {
   private static final Logger LOGGER = LoggerFactory.getLogger(FilteringSource.class);
 
-  private final CommunicationSource source;
-  private final CommunicationFilter filter;
+  private final Source source;
+  private final Filter filter;
 
-  public FilteringSource(CommunicationSource source, CommunicationFilter filter) {
+  public FilteringSource(Source source, Filter filter) {
     this.source = source;
     this.filter = filter;
   }
@@ -34,7 +34,7 @@ public class FilteringSource implements CommunicationSource {
   /*
    * (non-Javadoc)
    *
-   * @see edu.jhu.hlt.stretcher.source.CommunicationSource#exists(java.lang.String)
+   * @see edu.jhu.hlt.stretcher.source.Source#exists(java.lang.String)
    */
   @Override
   public boolean exists(String id) {
@@ -44,7 +44,7 @@ public class FilteringSource implements CommunicationSource {
   /*
    * (non-Javadoc)
    *
-   * @see edu.jhu.hlt.stretcher.source.CommunicationSource#size()
+   * @see edu.jhu.hlt.stretcher.source.Source#size()
    */
   @Override
   public int size() {
@@ -54,7 +54,7 @@ public class FilteringSource implements CommunicationSource {
   /*
    * (non-Javadoc)
    *
-   * @see edu.jhu.hlt.stretcher.source.CommunicationSource#get(java.lang.String)
+   * @see edu.jhu.hlt.stretcher.source.Source#get(java.lang.String)
    */
   @Override
   public Optional<Communication> get(String id) {
@@ -68,7 +68,7 @@ public class FilteringSource implements CommunicationSource {
   /*
    * (non-Javadoc)
    *
-   * @see edu.jhu.hlt.stretcher.source.CommunicationSource#get(java.util.List)
+   * @see edu.jhu.hlt.stretcher.source.Source#get(java.util.List)
    */
   @Override
   public List<Communication> get(List<String> ids) {
@@ -82,7 +82,7 @@ public class FilteringSource implements CommunicationSource {
 
   /*
    * (non-Javadoc)
-   * @see edu.jhu.hlt.stretcher.source.CommunicationSource#get(long, long)
+   * @see edu.jhu.hlt.stretcher.source.Source#get(long, long)
    */
   @Override
   public List<Communication> get(long offset, long nToGet) {

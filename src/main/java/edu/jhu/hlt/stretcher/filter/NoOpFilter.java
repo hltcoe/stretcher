@@ -9,18 +9,18 @@ import com.typesafe.config.Config;
 
 import edu.jhu.hlt.concrete.Communication;
 
-public class NoOpFilter implements CommunicationFilter {
+public class NoOpFilter implements Filter {
 
   /*
    * (non-Javadoc)
-   * @see edu.jhu.hlt.stretcher.filter.CommunicationFilter#initialize(com.typesafe.config.Config)
+   * @see edu.jhu.hlt.stretcher.filter.Filter#initialize(com.typesafe.config.Config)
    */
   @Override
   public void initialize(Config config) {}
 
   /*
    * (non-Javadoc)
-   * @see edu.jhu.hlt.stretcher.filter.CommunicationFilter#filter(edu.jhu.hlt.concrete.Communication)
+   * @see edu.jhu.hlt.stretcher.filter.Filter#filter(edu.jhu.hlt.concrete.Communication)
    */
   @Override
   public void filter(Communication c) {}

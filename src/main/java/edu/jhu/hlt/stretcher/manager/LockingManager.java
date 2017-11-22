@@ -13,8 +13,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import com.typesafe.config.Config;
 
 import edu.jhu.hlt.concrete.Communication;
-import edu.jhu.hlt.stretcher.fetch.CommunicationSource;
-import edu.jhu.hlt.stretcher.store.Persister;
+import edu.jhu.hlt.stretcher.source.Source;
+import edu.jhu.hlt.stretcher.store.Store;
 
 /**
  * Basic manager for reading and writing communications.
@@ -23,15 +23,15 @@ import edu.jhu.hlt.stretcher.store.Persister;
  */
 public class LockingManager implements Manager {
 
-  private CommunicationSource src;
-  private Persister storage;
+  private Source src;
+  private Store store;
   private Lock lock;
 
   @Override
-  public void initialize(CommunicationSource source, Persister persister, Config config) {
+  public void initialize(Source source, Store store, Config config) {
     this.lock = new ReentrantLock();
     this.src = source;
-    this.storage = persister;
+    this.store = store;
   }
 
   @Override
@@ -75,16 +75,16 @@ public class LockingManager implements Manager {
   }
 
   @Override
-  public void store(Communication updated) {
+  public void save(Communication updated) {
     lock.lock();
-    storage.store(updated);
+    store.save(updated);
     lock.unlock();
   }
 
   @Override
   public void close() throws Exception {
     lock.lock();
-    this.storage.close();
+    this.store.close();
     lock.unlock();
   }
 

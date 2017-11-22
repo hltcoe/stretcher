@@ -17,21 +17,21 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
 import edu.jhu.hlt.stretcher.Server;
-import edu.jhu.hlt.stretcher.fetch.CachingSource;
-import edu.jhu.hlt.stretcher.fetch.CommunicationSource;
-import edu.jhu.hlt.stretcher.fetch.DirectorySource;
-import edu.jhu.hlt.stretcher.fetch.FilteringSource;
-import edu.jhu.hlt.stretcher.fetch.ZipSource;
 import edu.jhu.hlt.stretcher.file.FileUtility;
 import edu.jhu.hlt.stretcher.file.FilenameMapper;
 import edu.jhu.hlt.stretcher.file.FlatMapper;
 import edu.jhu.hlt.stretcher.file.FormatDetector;
 import edu.jhu.hlt.stretcher.file.GzConcreteFiles;
-import edu.jhu.hlt.stretcher.store.CacheUpdatingPersister;
-import edu.jhu.hlt.stretcher.store.CombiningPersister;
-import edu.jhu.hlt.stretcher.store.DirectoryPersister;
-import edu.jhu.hlt.stretcher.store.NoOpPersister;
-import edu.jhu.hlt.stretcher.store.Persister;
+import edu.jhu.hlt.stretcher.source.CachingSource;
+import edu.jhu.hlt.stretcher.source.Source;
+import edu.jhu.hlt.stretcher.source.DirectorySource;
+import edu.jhu.hlt.stretcher.source.FilteringSource;
+import edu.jhu.hlt.stretcher.source.ZipSource;
+import edu.jhu.hlt.stretcher.store.CacheUpdatingStore;
+import edu.jhu.hlt.stretcher.store.CombiningStore;
+import edu.jhu.hlt.stretcher.store.DirectoryStore;
+import edu.jhu.hlt.stretcher.store.NoOpStore;
+import edu.jhu.hlt.stretcher.store.Store;
 import edu.jhu.hlt.stretcher.util.DependencyLoader;
 
 /**
@@ -46,12 +46,12 @@ public class ManagerFactory {
     Config config = loadConfig();
     DependencyLoader loader = new DependencyLoader(config);
     CachingSource source = prepareSource(createSource(opts), loader);
-    Persister persister = preparePersister(createPersister(opts), source, loader);
-    return loader.getManager(source, persister);
+    Store store = prepareStore(createStore(opts), source, loader);
+    return loader.getManager(source, store);
   }
 
-  private static CommunicationSource createSource(Server.Opts opts) throws IOException {
-    CommunicationSource source = null;
+  private static Source createSource(Server.Opts opts) throws IOException {
+    Source source = null;
     Path path = Paths.get(opts.inputPath);
     if (Files.isDirectory(path)) {
       FileUtility.validateDirectory(path);
@@ -65,32 +65,32 @@ public class ManagerFactory {
     return source;
   }
 
-  private static CachingSource prepareSource(CommunicationSource source, DependencyLoader loader) {
+  private static CachingSource prepareSource(Source source, DependencyLoader loader) {
     return new CachingSource(new FilteringSource(source, loader.getFilter()), loader.getCache());
   }
 
-  private static Persister createPersister(Server.Opts opts) throws IOException {
-    Persister persister = null;
+  private static Store createStore(Server.Opts opts) throws IOException {
+    Store store = null;
     Path path = Paths.get(opts.outputPath);
     if (Files.isDirectory(path)) {
       FileUtility.validateDirectory(path);
       if (detector != null) {
         FilenameMapper mapper = new FlatMapper(path, detector.getExtension());
-        persister = new DirectoryPersister(mapper, detector.getHelper());
+        store = new DirectoryStore(mapper, detector.getHelper());
       } else {
         // default to gz compressed
-        persister = new DirectoryPersister(new FlatMapper(path, "gz"), new GzConcreteFiles());
+        store = new DirectoryStore(new FlatMapper(path, "gz"), new GzConcreteFiles());
       }
       LOGGER.info("Store running on the directory " + path.toString());
     } else {
-      persister = new NoOpPersister();
+      store = new NoOpStore();
       LOGGER.info("Store is not running");
     }
-    return persister;
+    return store;
   }
 
-  private static Persister preparePersister(Persister persister, CachingSource source, DependencyLoader loader) {
-    return new CombiningPersister(new CacheUpdatingPersister(persister, source), loader.getCombiner());
+  private static Store prepareStore(Store store, CachingSource source, DependencyLoader loader) {
+    return new CombiningStore(new CacheUpdatingStore(store, source), loader.getCombiner());
   }
 
   private static Config loadConfig() {

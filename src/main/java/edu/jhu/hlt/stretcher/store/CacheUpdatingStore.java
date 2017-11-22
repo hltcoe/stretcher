@@ -6,18 +6,18 @@
 package edu.jhu.hlt.stretcher.store;
 
 import edu.jhu.hlt.concrete.Communication;
-import edu.jhu.hlt.stretcher.fetch.CachingSource;
+import edu.jhu.hlt.stretcher.source.CachingSource;
 
 /**
- * Updates the source cache on calls to store.
+ * Updates the source cache on calls to save().
  */
-public class CacheUpdatingPersister implements Persister {
+public class CacheUpdatingStore implements Store {
 
-  private final Persister persister;
+  private final Store store;
   private final CachingSource source;
 
-  public CacheUpdatingPersister(Persister persister, CachingSource source) {
-    this.persister = persister;
+  public CacheUpdatingStore(Store store, CachingSource source) {
+    this.store = store;
     if (source instanceof CachingSource) {
       this.source = (CachingSource)source;
     } else {
@@ -27,14 +27,14 @@ public class CacheUpdatingPersister implements Persister {
 
   /*
    * (non-Javadoc)
-   * @see edu.jhu.hlt.stretcher.storage.Persister#store(edu.jhu.hlt.concrete.Communication)
+   * @see edu.jhu.hlt.stretcher.storage.Store#save(edu.jhu.hlt.concrete.Communication)
    */
   @Override
-  public void store(Communication c) {
+  public void save(Communication c) {
     if (source != null) {
       source.update(c);
     }
-    persister.store(c);
+    store.save(c);
   }
 
   /*
@@ -43,7 +43,7 @@ public class CacheUpdatingPersister implements Persister {
    */
   @Override
   public void close() throws Exception {
-    persister.close();
+    store.close();
   }
 
 }

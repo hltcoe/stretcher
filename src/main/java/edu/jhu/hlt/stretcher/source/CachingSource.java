@@ -3,7 +3,7 @@
  * This software is released under the 2-clause BSD license.
  * See LICENSE in the project root directory.
  */
-package edu.jhu.hlt.stretcher.fetch;
+package edu.jhu.hlt.stretcher.source;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,13 +18,13 @@ import edu.jhu.hlt.stretcher.cache.Cache;
 /**
  * Wrapper around a source that provides caching.
  */
-public class CachingSource implements CommunicationSource {
+public class CachingSource implements Source {
   private static final Logger LOGGER = LoggerFactory.getLogger(CachingSource.class);
 
-  private final CommunicationSource source;
+  private final Source source;
   private final Cache cache;
 
-  public CachingSource(CommunicationSource source, Cache cache) {
+  public CachingSource(Source source, Cache cache) {
     this.source = source;
     this.cache = cache;
   }
@@ -32,7 +32,7 @@ public class CachingSource implements CommunicationSource {
   /*
    * (non-Javadoc)
    *
-   * @see edu.jhu.hlt.stretcher.source.CommunicationSource#exists(java.lang.String)
+   * @see edu.jhu.hlt.stretcher.source.Source#exists(java.lang.String)
    */
   @Override
   public boolean exists(String id) {
@@ -42,7 +42,7 @@ public class CachingSource implements CommunicationSource {
   /*
    * (non-Javadoc)
    *
-   * @see edu.jhu.hlt.stretcher.source.CommunicationSource#size()
+   * @see edu.jhu.hlt.stretcher.source.Source#size()
    */
   @Override
   public int size() {
@@ -52,7 +52,7 @@ public class CachingSource implements CommunicationSource {
   /*
    * (non-Javadoc)
    *
-   * @see edu.jhu.hlt.stretcher.source.CommunicationSource#get(java.lang.String)
+   * @see edu.jhu.hlt.stretcher.source.Source#get(java.lang.String)
    */
   @Override
   public Optional<Communication> get(String id) {
@@ -71,7 +71,7 @@ public class CachingSource implements CommunicationSource {
   /*
    * (non-Javadoc)
    *
-   * @see edu.jhu.hlt.stretcher.source.CommunicationSource#get(java.util.List)
+   * @see edu.jhu.hlt.stretcher.source.Source#get(java.util.List)
    */
   @Override
   public List<Communication> get(List<String> ids) {
@@ -85,7 +85,7 @@ public class CachingSource implements CommunicationSource {
 
   /*
    * (non-Javadoc)
-   * @see edu.jhu.hlt.stretcher.source.CommunicationSource#get(long, long)
+   * @see edu.jhu.hlt.stretcher.source.Source#get(long, long)
    */
   @Override
   public List<Communication> get(long offset, long nToGet) {

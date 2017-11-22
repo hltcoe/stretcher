@@ -12,18 +12,18 @@ import edu.jhu.hlt.concrete.Communication;
 /**
  * Save only the annotations from latest store request
  */
-public class OverwriteCombiner implements CommunicationCombiner {
+public class OverwriteCombiner implements Combiner {
 
   /*
    * (non-Javadoc)
-   * @see edu.jhu.hlt.stretcher.combiner.CommunicationCombiner#initialize(com.typesafe.config.Config)
+   * @see edu.jhu.hlt.stretcher.combiner.Combiner#initialize(com.typesafe.config.Config)
    */
   @Override
   public void initialize(Config config) {}
 
   /*
    * (non-Javadoc)
-   * @see edu.jhu.hlt.stretcher.combiner.CommunicationCombiner#combine(
+   * @see edu.jhu.hlt.stretcher.combiner.Combiner#combine(
    *        edu.jhu.hlt.concrete.Communication, edu.jhu.hlt.concrete.Communication)
    */
   @Override

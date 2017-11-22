@@ -19,10 +19,8 @@ import edu.jhu.hlt.concrete.Communication;
 import edu.jhu.hlt.stretcher.CommunicationUtility;
 import edu.jhu.hlt.stretcher.file.FlatMapper;
 import edu.jhu.hlt.stretcher.file.UncompressedConcreteFiles;
-import edu.jhu.hlt.stretcher.store.DirectoryPersister;
-import edu.jhu.hlt.stretcher.store.Persister;
 
-public class DirectoryPersisterTest {
+public class DirectoryStoreTest {
   public static TemporaryFolder folder = new TemporaryFolder();
   public static Path root;
 
@@ -39,14 +37,14 @@ public class DirectoryPersisterTest {
 
   @Ignore
   public void testStore() throws Exception {
-    Persister persister = new DirectoryPersister(new FlatMapper(root, "comm"), new UncompressedConcreteFiles());
+    Store store = new DirectoryStore(new FlatMapper(root, "comm"), new UncompressedConcreteFiles());
     Communication c = CommunicationUtility.create("99", "store test");
-    persister.store(c);
+    store.save(c);
     //Thread.sleep(100);
     //Optional<Communication> comm = engine.get("99");
     //assertTrue(comm.isPresent());
     //assertEquals("99", comm.get().getId());
-    persister.close();
+    store.close();
   }
 
 }

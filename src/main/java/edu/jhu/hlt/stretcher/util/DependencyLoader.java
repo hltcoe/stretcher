@@ -11,11 +11,11 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
 import edu.jhu.hlt.stretcher.cache.Cache;
-import edu.jhu.hlt.stretcher.combiner.CommunicationCombiner;
-import edu.jhu.hlt.stretcher.fetch.CommunicationSource;
-import edu.jhu.hlt.stretcher.filter.CommunicationFilter;
+import edu.jhu.hlt.stretcher.combiner.Combiner;
+import edu.jhu.hlt.stretcher.filter.Filter;
 import edu.jhu.hlt.stretcher.manager.Manager;
-import edu.jhu.hlt.stretcher.store.Persister;
+import edu.jhu.hlt.stretcher.source.Source;
+import edu.jhu.hlt.stretcher.store.Store;
 
 /**
  * Loads dependencies based on the configuration.
@@ -44,13 +44,13 @@ public class DependencyLoader {
     this.config = config;
   }
 
-  public Manager getManager(CommunicationSource source, Persister persister) {
+  public Manager getManager(Source source, Store store) {
     String clazz = config.getString(MANAGER_CLASS);
     if (!clazz.contains(".")) {
       clazz = MANAGER_PKG + "." + clazz;
     }
     Manager manager = (Manager)load(clazz);
-    manager.initialize(source, persister, getConfig(MANAGER_PARAMS));
+    manager.initialize(source, store, getConfig(MANAGER_PARAMS));
     return manager;
   }
 
@@ -64,22 +64,22 @@ public class DependencyLoader {
     return cache;
   }
 
-  public CommunicationCombiner getCombiner() {
+  public Combiner getCombiner() {
     String clazz = config.getString(COMBINER_CLASS);
     if (!clazz.contains(".")) {
       clazz = COMBINER_PKG + "." + clazz;
     }
-    CommunicationCombiner combiner = (CommunicationCombiner)load(clazz);
+    Combiner combiner = (Combiner)load(clazz);
     combiner.initialize(getConfig(COMBINER_PARAMS));
     return combiner;
   }
 
-  public CommunicationFilter getFilter() {
+  public Filter getFilter() {
     String clazz = config.getString(FILTER_CLASS);
     if (!clazz.contains(".")) {
       clazz = FILTER_PKG + "." + clazz;
     }
-    CommunicationFilter filter = (CommunicationFilter)load(clazz);
+    Filter filter = (Filter)load(clazz);
     filter.initialize(getConfig(FILTER_PARAMS));
     return filter;
   }

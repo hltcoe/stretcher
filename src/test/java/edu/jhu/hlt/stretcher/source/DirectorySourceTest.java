@@ -3,7 +3,7 @@
  * This software is released under the 2-clause BSD license.
  * See LICENSE in the project root directory.
  */
-package edu.jhu.hlt.stretcher.fetch;
+package edu.jhu.hlt.stretcher.source;
 
 import static org.junit.Assert.*;
 
@@ -21,7 +21,6 @@ import org.junit.rules.TemporaryFolder;
 
 import edu.jhu.hlt.concrete.Communication;
 import edu.jhu.hlt.stretcher.CommunicationUtility;
-import edu.jhu.hlt.stretcher.fetch.DirectorySource;
 import edu.jhu.hlt.stretcher.file.FormatDetector;
 
 public class DirectorySourceTest {
@@ -54,20 +53,20 @@ public class DirectorySourceTest {
 
   @Test
   public void testExists() throws Exception {
-    CommunicationSource source = getSource();
+    Source source = getSource();
     assertTrue(source.exists("1"));
     assertFalse(source.exists("0"));
   }
 
   @Test
   public void testSize() throws Exception {
-    CommunicationSource source = getSource();
+    Source source = getSource();
     assertEquals(4, source.size());
   }
 
   @Test
   public void testGetById() throws Exception {
-    CommunicationSource source = getSource();
+    Source source = getSource();
     Optional<Communication> comm = source.get("1");
     assertTrue(comm.isPresent());
     assertEquals("1", comm.get().getId());
@@ -76,14 +75,14 @@ public class DirectorySourceTest {
 
   @Test
   public void testGetByList() throws Exception {
-    CommunicationSource source = getSource();
+    Source source = getSource();
     List<Communication> list = source.get(Arrays.asList("0", "1", "2"));
     assertEquals(2, list.size());
   }
 
   @Test
   public void testGetIterator() throws Exception {
-    CommunicationSource source = getSource();
+    Source source = getSource();
     List<Communication> list = source.get(0, 2);
     assertEquals(2, list.size());
     assertEquals("1", list.get(0).getId());

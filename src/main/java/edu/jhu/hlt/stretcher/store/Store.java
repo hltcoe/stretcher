@@ -7,6 +7,10 @@ package edu.jhu.hlt.stretcher.store;
 
 import edu.jhu.hlt.concrete.Communication;
 
-public interface Persister extends AutoCloseable {
-  void store(Communication c);
+public interface Store extends AutoCloseable {
+  /**
+   * Save a communication in the store
+   * @param c Communication to save
+   */
+  void save(Communication c);
 }

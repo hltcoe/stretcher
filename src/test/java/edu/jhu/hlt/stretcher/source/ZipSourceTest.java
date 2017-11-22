@@ -3,7 +3,7 @@
  * This software is released under the 2-clause BSD license.
  * See LICENSE in the project root directory.
  */
-package edu.jhu.hlt.stretcher.fetch;
+package edu.jhu.hlt.stretcher.source;
 
 import static org.junit.Assert.*;
 
@@ -15,8 +15,6 @@ import java.util.List;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
-
-import edu.jhu.hlt.stretcher.fetch.ZipSource;
 
 public class ZipSourceTest {
 

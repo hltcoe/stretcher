@@ -20,7 +20,7 @@ import edu.jhu.hlt.concrete.Communication;
  * The Config object is loaded from a configuration file.
  * @see DependencyLoader
  */
-public interface CommunicationCombiner {
+public interface Combiner {
   /**
    * Initialize the cache
    * @param config Config object

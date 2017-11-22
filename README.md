@@ -25,13 +25,13 @@ Do not use a filter if the same directory is used for both source and storage.
 If an application is likely to request the same communications repeatedly, a cache can be used.
 The cache is specified in the configuration file.
 
-## Persisters
+## Stores
 Stretcher currently only supports one storage method.
-The persister is specified on the command line with the --output option.
+The store is specified on the command line with the --output option.
 
 ### Directory
-If the source is a directory, the persister will use the same filename convention.
-If the source is a zip file, the persister will save the files with the extension .gz
+If the source is a directory, the store will use the same filename convention.
+If the source is a zip file, the store will save the files with the extension .gz
 
 ## Combiners
 A combiner is used to integrate annotations from more than one annotator.

@@ -3,7 +3,7 @@
  * This software is released under the 2-clause BSD license.
  * See LICENSE in the project root directory.
  */
-package edu.jhu.hlt.stretcher.fetch;
+package edu.jhu.hlt.stretcher.source;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,9 +11,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import edu.jhu.hlt.concrete.Communication;
-import edu.jhu.hlt.stretcher.fetch.CommunicationSource;
 
-public class MemorySource implements CommunicationSource {
+public class MemorySource implements Source {
 
   private final Map<String, Communication> map;
 

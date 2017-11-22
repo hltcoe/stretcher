@@ -9,26 +9,30 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.jhu.hlt.concrete.Communication;
-import edu.jhu.hlt.stretcher.combiner.CommunicationCombiner;
+import edu.jhu.hlt.stretcher.combiner.Combiner;
 
 /**
  * Guaranteed combining of communications.
  *
- * Limitations include synchronization in store() and a cache of all communications.
+ * Limitations include synchronization in save() and a cache of all communications.
  */
-public class CombiningPersister implements Persister {
+public class CombiningStore implements Store {
 
-  private final Persister persister;
-  private final CommunicationCombiner combiner;
+  private final Store store;
+  private final Combiner combiner;
   private final Map<String, Communication> cache = new HashMap<>();
 
-  public CombiningPersister(Persister persister, CommunicationCombiner combiner) {
-    this.persister = persister;
+  public CombiningStore(Store store, Combiner combiner) {
+    this.store = store;
     this.combiner = combiner;
   }
 
+  /*
+   * (non-Javadoc)
+   * @see edu.jhu.hlt.stretcher.storage.Store#save(edu.jhu.hlt.concrete.Communication)
+   */
   @Override
-  public void store(Communication c) {
+  public void save(Communication c) {
     String id = c.getId();
     synchronized(this){
       if (cache.containsKey(id)) {
@@ -38,13 +42,17 @@ public class CombiningPersister implements Persister {
       } else {
         cache.put(id, c);
       }
-      persister.store(c);
+      store.save(c);
     }
   }
 
+  /*
+   * (non-Javadoc)
+   * @see java.lang.AutoCloseable#close()
+   */
   @Override
   public void close() throws Exception {
-    persister.close();
+    store.close();
   }
 
 }
