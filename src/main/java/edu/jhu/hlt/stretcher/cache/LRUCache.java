@@ -22,9 +22,15 @@ public class LRUCache implements Cache {
 
   private static final long DEFAULT_MAX_SIZE = 1000L;
 
-  private final ConcurrentMap<String, Communication> cache;
+  private ConcurrentMap<String, Communication> cache;
 
-  public LRUCache(Config config) {
+  /*
+   * (non-Javadoc)
+   *
+   * @see edu.jhu.hlt.stretcher.cache.Cache#initialize(com.typesafe.config.Config)
+   */
+  @Override
+  public void initialize(Config config) {
     long size = DEFAULT_MAX_SIZE;
     if (config.hasPath("size")) {
       size = config.getLong("size");

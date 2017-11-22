@@ -9,6 +9,9 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
+
 import edu.jhu.hlt.concrete.Communication;
 import edu.jhu.hlt.stretcher.CommunicationUtility;
 import edu.jhu.hlt.stretcher.combiner.CommunicationCombiner;
@@ -20,7 +23,9 @@ public class CombiningPersisterTest {
   @Test
   public void test() throws Exception {
     MemoryPersister store = new MemoryPersister();
-    Persister persister = new CombiningPersister(store, new TextAppender());
+    CommunicationCombiner combiner = new TextAppender();
+    combiner.initialize(ConfigFactory.empty());
+    Persister persister = new CombiningPersister(store, combiner);
     Communication c1 = CommunicationUtility.create("1", "hello");
     Communication c2 = c1.deepCopy();
     c2.setText("world");
@@ -33,6 +38,9 @@ public class CombiningPersisterTest {
   }
 
   private class TextAppender implements CommunicationCombiner {
+    @Override
+    public void initialize(Config config) {}
+
     @Override
     public Communication combine(Communication c1, Communication c2) {
       c1.setText(c1.getText() + " " + c2.getText());

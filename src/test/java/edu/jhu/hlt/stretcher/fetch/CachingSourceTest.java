@@ -18,6 +18,7 @@ import com.typesafe.config.ConfigFactory;
 
 import edu.jhu.hlt.concrete.Communication;
 import edu.jhu.hlt.stretcher.CommunicationUtility;
+import edu.jhu.hlt.stretcher.cache.Cache;
 import edu.jhu.hlt.stretcher.cache.LRUCache;
 import edu.jhu.hlt.stretcher.fetch.CommunicationSource;
 
@@ -38,7 +39,9 @@ public class CachingSourceTest {
 
   private CachingSource getSource() {
     // we don't need any configuration to run unit test
-    return new CachingSource(new MemorySource(map), new LRUCache(ConfigFactory.defaultOverrides()));
+    Cache cache = new LRUCache();
+    cache.initialize(ConfigFactory.empty());
+    return new CachingSource(new MemorySource(map), cache);
   }
 
   @Test

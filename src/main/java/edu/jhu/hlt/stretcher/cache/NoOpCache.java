@@ -14,7 +14,13 @@ import edu.jhu.hlt.concrete.Communication;
  */
 public class NoOpCache implements Cache {
 
-  public NoOpCache(Config config) {}
+  /*
+   * (non-Javadoc)
+   *
+   * @see edu.jhu.hlt.stretcher.cache.Cache#initialize(com.typesafe.config.Config)
+   */
+  @Override
+  public void initialize(Config config) {}
 
   /*
    * (non-Javadoc)

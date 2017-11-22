@@ -17,14 +17,18 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
 import edu.jhu.hlt.stretcher.Server;
+import edu.jhu.hlt.stretcher.fetch.CachingSource;
 import edu.jhu.hlt.stretcher.fetch.CommunicationSource;
 import edu.jhu.hlt.stretcher.fetch.DirectorySource;
+import edu.jhu.hlt.stretcher.fetch.FilteringSource;
 import edu.jhu.hlt.stretcher.fetch.ZipSource;
 import edu.jhu.hlt.stretcher.file.FileUtility;
 import edu.jhu.hlt.stretcher.file.FilenameMapper;
 import edu.jhu.hlt.stretcher.file.FlatMapper;
 import edu.jhu.hlt.stretcher.file.FormatDetector;
 import edu.jhu.hlt.stretcher.file.GzConcreteFiles;
+import edu.jhu.hlt.stretcher.store.CacheUpdatingPersister;
+import edu.jhu.hlt.stretcher.store.CombiningPersister;
 import edu.jhu.hlt.stretcher.store.DirectoryPersister;
 import edu.jhu.hlt.stretcher.store.NoOpPersister;
 import edu.jhu.hlt.stretcher.store.Persister;
@@ -41,8 +45,8 @@ public class ManagerFactory {
   public static Manager create(Server.Opts opts) throws IOException {
     Config config = loadConfig();
     DependencyLoader loader = new DependencyLoader(config);
-    CommunicationSource source = createSource(opts);
-    Persister persister = createPersister(opts);
+    CachingSource source = prepareSource(createSource(opts), loader);
+    Persister persister = preparePersister(createPersister(opts), source, loader);
     return loader.getManager(source, persister);
   }
 
@@ -59,6 +63,10 @@ public class ManagerFactory {
       LOGGER.info("Fetch running on the zip file " + path.toString());
     }
     return source;
+  }
+
+  private static CachingSource prepareSource(CommunicationSource source, DependencyLoader loader) {
+    return new CachingSource(new FilteringSource(source, loader.getFilter()), loader.getCache());
   }
 
   private static Persister createPersister(Server.Opts opts) throws IOException {
@@ -79,6 +87,10 @@ public class ManagerFactory {
       LOGGER.info("Store is not running");
     }
     return persister;
+  }
+
+  private static Persister preparePersister(Persister persister, CachingSource source, DependencyLoader loader) {
+    return new CombiningPersister(new CacheUpdatingPersister(persister, source), loader.getCombiner());
   }
 
   private static Config loadConfig() {

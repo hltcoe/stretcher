@@ -14,7 +14,12 @@ import edu.jhu.hlt.concrete.Communication;
  */
 public class OverwriteCombiner implements CommunicationCombiner {
 
-  public OverwriteCombiner(Config config) {}
+  /*
+   * (non-Javadoc)
+   * @see edu.jhu.hlt.stretcher.combiner.CommunicationCombiner#initialize(com.typesafe.config.Config)
+   */
+  @Override
+  public void initialize(Config config) {}
 
   /*
    * (non-Javadoc)

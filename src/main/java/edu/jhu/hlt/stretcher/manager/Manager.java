@@ -18,10 +18,10 @@ import edu.jhu.hlt.stretcher.store.Persister;
  * Manage fetch and store requests.
  *
  * The manager wraps a communication source and a store persister.
- * The constructor must take three arguments:
- *  - CommunicationSource
- *  - Persister
- *  - Config
+ * The constructor should not take any arguments.
+ * Instead, the initialize() method is used to initialize the object.
+ * The Config object is loaded from a configuration file.
+ * @see DependencyLoader
  */
 public interface Manager extends CommunicationSource, Persister, AutoCloseable {
 

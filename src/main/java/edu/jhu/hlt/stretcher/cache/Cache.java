@@ -5,15 +5,26 @@
  */
 package edu.jhu.hlt.stretcher.cache;
 
+import com.typesafe.config.Config;
+
 import edu.jhu.hlt.concrete.Communication;
 
 /**
  * Cache interface
  *
- * The constructor must accept one parameter:
- *  - Config
+ * The constructor should not take any arguments.
+ * Instead, the initialize() method is used to initialize the object.
+ * The Config object is loaded from a configuration file.
+ * @see DependencyLoader
  */
 public interface Cache {
+
+  /**
+   * Initialize the cache
+   * @param config Config object
+   */
+  public void initialize(Config config);
+
   /**
    * Does this communication id exist in the cache?
    * @param id Communication id

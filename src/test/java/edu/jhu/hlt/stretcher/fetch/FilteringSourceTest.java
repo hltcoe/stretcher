@@ -14,6 +14,9 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
+
 import edu.jhu.hlt.concrete.Communication;
 import edu.jhu.hlt.stretcher.CommunicationUtility;
 import edu.jhu.hlt.stretcher.fetch.CommunicationSource;
@@ -37,11 +40,14 @@ public class FilteringSourceTest {
 
   @Test
   public void test() {
-    CommunicationSource source = new FilteringSource(new MemorySource(map), new DeleteFilter());
+    CommunicationFilter filter = new DeleteFilter();
+    filter.initialize(ConfigFactory.empty());
+    CommunicationSource source = new FilteringSource(new MemorySource(map), filter);
     assertEquals("", source.get("1").get().getText());
   }
 
   private class DeleteFilter implements CommunicationFilter {
+    public void initialize(Config config) {}
     public void filter(Communication c) {
       c.setText("");
     }

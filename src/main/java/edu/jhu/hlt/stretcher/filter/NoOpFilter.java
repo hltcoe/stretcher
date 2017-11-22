@@ -11,7 +11,12 @@ import edu.jhu.hlt.concrete.Communication;
 
 public class NoOpFilter implements CommunicationFilter {
 
-  public NoOpFilter(Config config) {}
+  /*
+   * (non-Javadoc)
+   * @see edu.jhu.hlt.stretcher.filter.CommunicationFilter#initialize(com.typesafe.config.Config)
+   */
+  @Override
+  public void initialize(Config config) {}
 
   /*
    * (non-Javadoc)

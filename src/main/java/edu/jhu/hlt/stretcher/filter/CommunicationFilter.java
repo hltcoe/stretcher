@@ -5,15 +5,25 @@
  */
 package edu.jhu.hlt.stretcher.filter;
 
+import com.typesafe.config.Config;
+
 import edu.jhu.hlt.concrete.Communication;
 
 /**
  * Remove data from a communication that is not required.
  *
- * The constructor must accept one parameter:
- *  - Config
+ * The constructor should not take any arguments.
+ * Instead, the initialize() method is used to initialize the object.
+ * The Config object is loaded from a configuration file.
+ * @see DependencyLoader
  */
 public interface CommunicationFilter {
+  /**
+   * Initialize the cache
+   * @param config Config object
+   */
+  public void initialize(Config config);
+
   /**
    * Slim down a communication
    * @param c The communication that needs a diet.
