@@ -21,7 +21,7 @@ import edu.jhu.hlt.concrete.Communication;
 import edu.jhu.hlt.concrete.serialization.CompactCommunicationSerializer;
 import edu.jhu.hlt.concrete.util.ConcreteException;
 
-public class ZipSource implements Source, AutoCloseable {
+public class ZipSource implements Source {
 
   private ZipFile zf;
   private String extension = "comm";
@@ -113,6 +113,10 @@ public class ZipSource implements Source, AutoCloseable {
     return count;
   }
 
+  /*
+   * (non-Javadoc)
+   * @see java.lang.AutoCloseable#close()
+   */
   @Override
   public void close() throws Exception {
     zf.close();

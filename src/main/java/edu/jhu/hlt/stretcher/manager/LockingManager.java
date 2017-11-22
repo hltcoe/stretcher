@@ -84,6 +84,7 @@ public class LockingManager implements Manager {
   @Override
   public void close() throws Exception {
     lock.lock();
+    this.src.close();
     this.store.close();
     lock.unlock();
   }

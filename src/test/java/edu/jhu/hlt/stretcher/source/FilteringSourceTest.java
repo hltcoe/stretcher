@@ -37,11 +37,12 @@ public class FilteringSourceTest {
   }
 
   @Test
-  public void test() {
+  public void test() throws Exception {
     Filter filter = new DeleteFilter();
     filter.initialize(ConfigFactory.empty());
     Source source = new FilteringSource(new MemorySource(map), filter);
     assertEquals("", source.get("1").get().getText());
+    source.close();
   }
 
   private class DeleteFilter implements Filter {

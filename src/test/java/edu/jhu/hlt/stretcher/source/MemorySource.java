@@ -49,4 +49,7 @@ public class MemorySource implements Source {
     throw new RuntimeException("Not implemented");
   }
 
+  @Override
+  public void close() throws Exception {}
+
 }

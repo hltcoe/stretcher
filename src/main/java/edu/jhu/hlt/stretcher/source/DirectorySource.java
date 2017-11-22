@@ -129,4 +129,11 @@ public class DirectorySource implements Source {
     }
   }
 
+  /*
+   * (non-Javadoc)
+   * @see java.lang.AutoCloseable#close()
+   */
+  @Override
+  public void close() throws Exception {}
+
 }

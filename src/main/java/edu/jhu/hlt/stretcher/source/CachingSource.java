@@ -99,4 +99,13 @@ public class CachingSource implements Source {
   public void update(Communication c) {
     cache.replace(c.getId(), c);
   }
+
+  /*
+   * (non-Javadoc)
+   * @see java.lang.AutoCloseable#close()
+   */
+  @Override
+  public void close() throws Exception {
+    source.close();
+  }
 }

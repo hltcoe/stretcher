@@ -13,7 +13,7 @@ import edu.jhu.hlt.concrete.Communication;
 /**
  * A source of communications for a fetch service.
  */
-public interface Source {
+public interface Source extends AutoCloseable {
 
   /**
    * Does this communication exist in the source
