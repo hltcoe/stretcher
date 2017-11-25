@@ -19,7 +19,7 @@ import edu.jhu.hlt.concrete.Communication;
  */
 public interface Filter {
   /**
-   * Initialize the cache
+   * Initialize the filter
    * @param config Config object
    */
   public void initialize(Config config);

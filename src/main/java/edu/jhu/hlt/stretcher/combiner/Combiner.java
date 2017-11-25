@@ -22,7 +22,7 @@ import edu.jhu.hlt.concrete.Communication;
  */
 public interface Combiner {
   /**
-   * Initialize the cache
+   * Initialize the combiner
    * @param config Config object
    */
   public void initialize(Config config);
