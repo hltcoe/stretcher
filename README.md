@@ -14,6 +14,7 @@ Compressed extensions supported: .gz, .comm.gz, or .concrete.gz
 ### Zip File
 A single zip file can be used as a source.
 The files in the zip file must be named id.comm
+Modifications to the zip file while running are unlikely to be reflected in the served communications.
 
 ## Filters
 A filter runs immediately after loading a communication from the file system.
@@ -32,6 +33,11 @@ The store is specified on the command line with the --output option.
 ### Directory
 If the source is a directory, the store will use the same filename convention.
 If the source is a zip file, the store will save the files with the extension .gz
+
+### Zip File
+A zip archive file can be used as a store.
+The files will be named id.comm in the archive.
+Using a zip archive as a store may result in heavy memory usage.
 
 ## Combiners
 A combiner is used to integrate annotations from more than one annotator.

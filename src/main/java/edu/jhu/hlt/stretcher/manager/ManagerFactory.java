@@ -32,6 +32,7 @@ import edu.jhu.hlt.stretcher.store.CombiningStore;
 import edu.jhu.hlt.stretcher.store.DirectoryStore;
 import edu.jhu.hlt.stretcher.store.NoOpStore;
 import edu.jhu.hlt.stretcher.store.Store;
+import edu.jhu.hlt.stretcher.store.ZipStore;
 import edu.jhu.hlt.stretcher.util.DependencyLoader;
 
 /**
@@ -83,8 +84,8 @@ public class ManagerFactory {
       }
       LOGGER.info("Store running on the directory " + path.toString());
     } else {
-      store = new NoOpStore();
-      LOGGER.info("Store is not running");
+      store = new ZipStore(path);
+      LOGGER.info("Store is running on the zip file " + path.toString());
     }
     return store;
   }

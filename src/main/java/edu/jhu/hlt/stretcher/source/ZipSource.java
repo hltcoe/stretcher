@@ -21,6 +21,11 @@ import edu.jhu.hlt.concrete.Communication;
 import edu.jhu.hlt.concrete.serialization.CompactCommunicationSerializer;
 import edu.jhu.hlt.concrete.util.ConcreteException;
 
+/**
+ * Load communications from a zip archive.
+ *
+ * Modifications to the archive while running may not affect the returned communications.
+ */
 public class ZipSource implements Source {
 
   private ZipFile zf;

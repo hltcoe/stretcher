@@ -97,6 +97,8 @@ public class ZipStore implements Store {
     LOGGER.info("Shutdown triggered; awaiting task termination");
     executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
     fs.close();
-    Files.delete(tmpDir);
+    if (Files.exists(tmpDir)) {
+      Files.delete(tmpDir);
+    }
   }
 }

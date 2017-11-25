@@ -90,4 +90,35 @@ public class ZipStoreTest {
     assertEquals("new file", comm.get().getText());
     source.close();
   }
+
+  // changes to zip archive requires close() to be called on the store and
+  // the source to be reopened.
+  @Test
+  public void testParallelReadsWrites() throws Exception {
+    Path path = root.resolve("test4.zip");
+    Store store = new ZipStore(path);
+    Communication c1 = CommunicationUtility.create("1", "this is a test");
+    store.save(c1);
+    store.close();
+
+    ZipSource source = new ZipSource(path);
+    Optional<Communication> comm = source.get("1");
+    assertTrue(comm.isPresent());
+    assertEquals("this is a test", comm.get().getText());
+
+    store = new ZipStore(path);
+    Communication c1prime = CommunicationUtility.create("1", "second write");
+    store.save(c1prime);
+    store.close();
+
+    source.close();
+    source = new ZipSource(path);
+    comm = source.get("1");
+    assertTrue(comm.isPresent());
+    assertEquals("second write", comm.get().getText());
+
+    store.close();
+    source.close();
+  }
+
 }
