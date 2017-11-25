@@ -48,6 +48,11 @@ The combiner is specified in the configuration file.
 mvn clean package
 ```
 
+## Configuration
+While the input and output are specified on the command line, other options are specified in a configuration file.
+The file should be called stretcher.conf and should be in this directory.
+See src/main/resources/application.conf for the list of supported options.
+
 ## Run
 Stretcher automatically detects the format of the data given a path to a directory or file.
 

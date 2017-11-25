@@ -7,6 +7,9 @@ package edu.jhu.hlt.stretcher.util;
 
 import java.lang.reflect.InvocationTargetException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
@@ -24,6 +27,7 @@ import edu.jhu.hlt.stretcher.store.Store;
  * The params are passed as a Config object to the dependency's initialize() method.
  */
 public class DependencyLoader {
+  private static Logger LOGGER = LoggerFactory.getLogger(DependencyLoader.class);
 
   private static final String MANAGER_CLASS = "stretcher.manager.class";
   private static final String MANAGER_PARAMS = "stretcher.manager.params";
@@ -49,6 +53,7 @@ public class DependencyLoader {
     if (!clazz.contains(".")) {
       clazz = MANAGER_PKG + "." + clazz;
     }
+    LOGGER.info("Manager is " + clazz);
     Manager manager = (Manager)load(clazz);
     manager.initialize(source, store, getConfig(MANAGER_PARAMS));
     return manager;
@@ -59,6 +64,7 @@ public class DependencyLoader {
     if (!clazz.contains(".")) {
       clazz = CACHE_PKG + "." + clazz;
     }
+    LOGGER.info("Cache is " + clazz);
     Cache cache = (Cache)load(clazz);
     cache.initialize(getConfig(CACHE_PARAMS));
     return cache;
@@ -69,6 +75,7 @@ public class DependencyLoader {
     if (!clazz.contains(".")) {
       clazz = COMBINER_PKG + "." + clazz;
     }
+    LOGGER.info("Combiner is " + clazz);
     Combiner combiner = (Combiner)load(clazz);
     combiner.initialize(getConfig(COMBINER_PARAMS));
     return combiner;
@@ -79,6 +86,7 @@ public class DependencyLoader {
     if (!clazz.contains(".")) {
       clazz = FILTER_PKG + "." + clazz;
     }
+    LOGGER.info("Filter is " + clazz);
     Filter filter = (Filter)load(clazz);
     filter.initialize(getConfig(FILTER_PARAMS));
     return filter;

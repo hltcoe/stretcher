@@ -5,7 +5,9 @@
  */
 package edu.jhu.hlt.stretcher.manager;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -30,7 +32,6 @@ import edu.jhu.hlt.stretcher.source.ZipSource;
 import edu.jhu.hlt.stretcher.store.CacheUpdatingStore;
 import edu.jhu.hlt.stretcher.store.CombiningStore;
 import edu.jhu.hlt.stretcher.store.DirectoryStore;
-import edu.jhu.hlt.stretcher.store.NoOpStore;
 import edu.jhu.hlt.stretcher.store.Store;
 import edu.jhu.hlt.stretcher.store.ZipStore;
 import edu.jhu.hlt.stretcher.util.DependencyLoader;
@@ -40,6 +41,8 @@ import edu.jhu.hlt.stretcher.util.DependencyLoader;
  */
 public class ManagerFactory {
   private static Logger LOGGER = LoggerFactory.getLogger(ManagerFactory.class);
+
+  private static final String CONFIG = "stretcher.conf";
 
   private static FormatDetector detector;
 
@@ -96,7 +99,15 @@ public class ManagerFactory {
 
   private static Config loadConfig() {
     Config defaultConfig = ConfigFactory.load();
-    return defaultConfig;
+    Config config = defaultConfig;
+    ClassLoader classLoader = ManagerFactory.class.getClassLoader();
+    URL url = classLoader.getResource(CONFIG);
+    if (url != null) {
+      File configFile = new File(url.getFile());
+      LOGGER.info("Loading configuration from " + configFile.getAbsolutePath());
+      config = ConfigFactory.parseFile(configFile).withFallback(defaultConfig);
+    }
+    return config;
   }
 
 }
