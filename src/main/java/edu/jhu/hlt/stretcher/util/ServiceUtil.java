@@ -11,6 +11,6 @@ public class ServiceUtil {
   public static ServiceInfo serviceInfo() {
     return new ServiceInfo()
         .setName("stretcher")
-        .setVersion("0.0.1");
+        .setVersion("0.4.0");
   }
 }
