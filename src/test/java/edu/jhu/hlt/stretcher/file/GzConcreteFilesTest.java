@@ -36,6 +36,8 @@ public class GzConcreteFilesTest {
     assertEquals(c1.getId(), c2.getId());
     assertEquals(c1.getUuid(), c2.getUuid());
     assertEquals(c1.getText(), c2.getText());
+
+    folder.delete();
   }
 
 }
