@@ -3,17 +3,17 @@ A Java-based Concrete fetch and store service that uses the file system for stor
 
 ## Sources
 Stretcher supports loading communications from different types of sources.
-The source is specified on the command line with the --input option.
+The source is specified on the command line with the `--input` option.
 All sources use the communication ID as the unique identifier.
 
 ### Directory
 A flat directory containing uncompressed or gzipped files.
-Uncompressed extensions supported: no extension, .comm, or .concrete
-Compressed extensions supported: .gz, .comm.gz, or .concrete.gz
+Uncompressed extensions supported: no extension, `.comm`, or `.concrete`.
+Compressed extensions supported: `.gz`, `.comm.gz`, or `.concrete.gz`.
 
 ### Zip File
 A single zip file can be used as a source.
-The files in the zip file must be named id.comm
+The files in the zip file must be named `id.comm`.
 Modifications to the zip file while running are unlikely to be reflected in the served communications.
 
 ## Filters
@@ -28,11 +28,11 @@ The cache is specified in the configuration file.
 
 ## Stores
 Stretcher currently only supports one storage method.
-The store is specified on the command line with the --output option.
+The store is specified on the command line with the `--output` option.
 
 ### Directory
 If the source is a directory, the store will use the same filename convention.
-If the source is a zip file, the store will save the files with the extension .gz
+If the source is a zip file, the store will save the files with the extension `.gz`.
 
 ### Zip File
 A zip archive file can be used as a store.
@@ -69,6 +69,8 @@ Serve Concrete objects from a zip file with fetch on port 8888:
 ```
 ./start.sh --input twitter.zip --fp 8888
 ```
+
+For more information on the command line options, pass the `-h` flag.
 
 
 ## Docker
