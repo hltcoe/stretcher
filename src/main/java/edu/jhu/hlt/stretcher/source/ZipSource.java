@@ -8,6 +8,7 @@ package edu.jhu.hlt.stretcher.source;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -20,6 +21,8 @@ import org.apache.commons.io.IOUtils;
 import edu.jhu.hlt.concrete.Communication;
 import edu.jhu.hlt.concrete.serialization.CompactCommunicationSerializer;
 import edu.jhu.hlt.concrete.util.ConcreteException;
+import edu.jhu.hlt.stretcher.file.FilenameMapper;
+import edu.jhu.hlt.stretcher.file.FlatMapper;
 
 /**
  * Load communications from a zip archive.
@@ -28,21 +31,37 @@ import edu.jhu.hlt.concrete.util.ConcreteException;
  */
 public class ZipSource implements Source {
 
-  private ZipFile zf;
-  private String extension = "comm";
-  private CompactCommunicationSerializer ser = new CompactCommunicationSerializer();
+  private static final String EXTENSION = "comm";
+
+  private final ZipFile zf;
+  private final CompactCommunicationSerializer ser = new CompactCommunicationSerializer();
+  private final FilenameMapper mapper;
 
   public ZipSource(Path path) throws IOException {
     zf = new ZipFile(path.toAbsolutePath().toString());
+    String dir = getPrimaryDir();
+    mapper = new FlatMapper(Paths.get(dir), EXTENSION);
   }
 
   private String getFilename(String id) {
-    return id + "." + extension;
+    return mapper.map(id).toString();
   }
 
   @Override
   public boolean exists(String id) {
     return zf.getEntry(getFilename(id)) != null;
+  }
+
+  @Override
+  public int size() {
+    int count = 0;
+    for (Enumeration<ZipArchiveEntry> e = zf.getEntries(); e.hasMoreElements();) {
+      ZipArchiveEntry zae = e.nextElement();
+      if (!zae.isDirectory()) {
+        count++;
+      }
+    }
+    return count;
   }
 
   private Communication load(ZipArchiveEntry zae) throws ZipLoadException {
@@ -61,6 +80,19 @@ public class ZipSource implements Source {
       throw new ZipLoadException("Does not exist");
     }
     return load(zae);
+  }
+
+  // take a guess that first entry is a directory if it exists
+  private String getPrimaryDir() {
+    String dir = "";
+    Enumeration<ZipArchiveEntry> e = zf.getEntriesInPhysicalOrder();
+    if (e.hasMoreElements()) {
+      ZipArchiveEntry zae = e.nextElement();
+      if (zae.isDirectory()) {
+        dir = zae.getName();
+      }
+    }
+    return dir;
   }
 
   @Override
@@ -88,7 +120,11 @@ public class ZipSource implements Source {
     Enumeration<ZipArchiveEntry> e = zf.getEntriesInPhysicalOrder();
     for (int i = 0; i < offset; i++) {
       if (e.hasMoreElements()) {
-        e.nextElement();
+        ZipArchiveEntry zae = e.nextElement();
+        // ignore directories by rewinding the counter one
+        if (zae.isDirectory()) {
+          i--;
+        }
       } else {
         break;
       }
@@ -97,7 +133,14 @@ public class ZipSource implements Source {
       if (e.hasMoreElements()) {
         ZipArchiveEntry zae = e.nextElement();
         try {
-          comms.add(load(zae));
+          if (zae.isDirectory()) {
+            // ignore directories by rewinding the counter one
+            if (zae.isDirectory()) {
+              i--;
+            }
+          } else {
+            comms.add(load(zae));
+          }
         } catch (ZipLoadException ex) {
           // something corrupted with the zip file?
           throw new RuntimeException("Error getting file from zip file", ex);
@@ -107,15 +150,6 @@ public class ZipSource implements Source {
       }
     }
     return comms;
-  }
-
-  @Override
-  public int size() {
-    int count = 0;
-    for (Enumeration<ZipArchiveEntry> e = zf.getEntries(); e.hasMoreElements(); e.nextElement()) {
-      count++;
-    }
-    return count;
   }
 
   /*
