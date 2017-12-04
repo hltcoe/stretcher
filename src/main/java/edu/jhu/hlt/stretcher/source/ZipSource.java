@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +18,8 @@ import java.util.Optional;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.jhu.hlt.concrete.Communication;
 import edu.jhu.hlt.concrete.serialization.CompactCommunicationSerializer;
@@ -30,8 +33,7 @@ import edu.jhu.hlt.stretcher.file.FlatMapper;
  * Modifications to the archive while running may not affect the returned communications.
  */
 public class ZipSource implements Source {
-
-  private static final String EXTENSION = "comm";
+  private static final Logger LOGGER = LoggerFactory.getLogger(ZipSource.class);
 
   private final ZipFile zf;
   private final CompactCommunicationSerializer ser = new CompactCommunicationSerializer();
@@ -40,7 +42,12 @@ public class ZipSource implements Source {
   public ZipSource(Path path) throws IOException {
     zf = new ZipFile(path.toAbsolutePath().toString());
     String dir = getPrimaryDir();
-    mapper = new FlatMapper(Paths.get(dir), EXTENSION);
+    String extension = new ExtensionFinder().getExtension(zf);
+    if (extension == null) {
+      LOGGER.warn("Did not find any communications in " + path.toString());
+      extension = "comm";
+    }
+    mapper = new FlatMapper(Paths.get(dir), extension);
   }
 
   private String getFilename(String id) {
@@ -170,6 +177,22 @@ public class ZipSource implements Source {
 
     public ZipLoadException(Throwable throwable) {
       super(throwable);
+    }
+  }
+
+  private class ExtensionFinder {
+    private final List<String> extensions = Arrays.asList(new String[] {"comm", "concrete"});
+
+    public String getExtension(ZipFile zf) {
+      for (Enumeration<ZipArchiveEntry> e = zf.getEntries(); e.hasMoreElements();) {
+        ZipArchiveEntry zae = e.nextElement();
+        for (String extension : extensions) {
+          if (zae.getName().endsWith(extension)) {
+            return extension;
+          }
+        }
+      }
+      return null;
     }
   }
 }

@@ -13,9 +13,9 @@ Compressed extensions supported: `.gz`, `.comm.gz`, or `.concrete.gz`.
 
 ### Zip File
 A single zip file can be used as a source.
-The files in the zip file must be named `id.comm`.
+The files in the zip file must be named `id.comm` or `id.concrete`.
 The files must be in the root of the archive or in a single directory under the root.
-Modifications to the zip file while running are unlikely to be reflected in the served communications.
+It is recommended to not write changes back to the same zip file.
 
 ## Filters
 A filter runs immediately after loading a communication from the file system.
