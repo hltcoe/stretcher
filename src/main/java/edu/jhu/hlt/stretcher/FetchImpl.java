@@ -5,6 +5,7 @@
  */
 package edu.jhu.hlt.stretcher;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,6 +42,7 @@ public class FetchImpl implements FetchCommunicationService.Iface, AutoCloseable
   @Override
   public FetchResult fetch(FetchRequest request) throws ServicesException, TException {
     FetchResult res = new FetchResult();
+    res.setCommunications(new ArrayList<Communication>());
     this.mgr.get(request.getCommunicationIds()).forEach(res::addToCommunications);
     return res;
   }
