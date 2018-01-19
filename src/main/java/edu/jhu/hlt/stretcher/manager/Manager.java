@@ -7,10 +7,6 @@ package edu.jhu.hlt.stretcher.manager;
 
 import com.typesafe.config.Config;
 
-import edu.jhu.hlt.concrete.access.FetchCommunicationService;
-import edu.jhu.hlt.concrete.access.StoreCommunicationService;
-import edu.jhu.hlt.stretcher.FetchImpl;
-import edu.jhu.hlt.stretcher.StoreImpl;
 import edu.jhu.hlt.stretcher.source.Source;
 import edu.jhu.hlt.stretcher.store.Store;
 
@@ -27,11 +23,4 @@ public interface Manager extends Source, Store, AutoCloseable {
 
   public void initialize(Source source, Store store, Config config);
 
-  default StoreCommunicationService.Iface getStoreImpl() {
-    return new StoreImpl(this);
-  }
-
-  default FetchCommunicationService.Iface getFetchImpl() {
-    return new FetchImpl(this);
-  }
 }

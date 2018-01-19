@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 
 import org.apache.thrift.TException;
 
+import com.typesafe.config.Config;
+
 import edu.jhu.hlt.concrete.Communication;
 import edu.jhu.hlt.concrete.access.FetchCommunicationService;
 import edu.jhu.hlt.concrete.access.FetchRequest;
@@ -23,10 +25,13 @@ import edu.jhu.hlt.stretcher.util.ServiceUtil;
 
 public class FetchImpl implements FetchCommunicationService.Iface, AutoCloseable {
 
+  private static final String CONFIG_MAX = "stretcher.fetch.max";
   private final Manager mgr;
+  private final long maxNumComms;
 
-  public FetchImpl(Manager mgr) {
+  public FetchImpl(Manager mgr, Config config) {
     this.mgr = mgr;
+    this.maxNumComms = config.getLong(CONFIG_MAX);
   }
 
   @Override
@@ -41,6 +46,9 @@ public class FetchImpl implements FetchCommunicationService.Iface, AutoCloseable
 
   @Override
   public FetchResult fetch(FetchRequest request) throws ServicesException, TException {
+    if (maxNumComms > 0 && request.getCommunicationIds().size() > maxNumComms){
+      throw new ServicesException("Requested more than " + maxNumComms + " communications");
+    }
     FetchResult res = new FetchResult();
     res.setCommunications(new ArrayList<Communication>());
     this.mgr.get(request.getCommunicationIds()).forEach(res::addToCommunications);

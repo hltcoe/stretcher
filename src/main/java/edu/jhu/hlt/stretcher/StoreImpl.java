@@ -7,6 +7,8 @@ package edu.jhu.hlt.stretcher;
 
 import org.apache.thrift.TException;
 
+import com.typesafe.config.Config;
+
 import edu.jhu.hlt.concrete.Communication;
 import edu.jhu.hlt.concrete.access.StoreCommunicationService;
 import edu.jhu.hlt.concrete.services.ServiceInfo;
@@ -18,7 +20,7 @@ public class StoreImpl implements StoreCommunicationService.Iface, AutoCloseable
 
   private final Manager mgr;
 
-  public StoreImpl(Manager mgr) {
+  public StoreImpl(Manager mgr, Config config) {
     this.mgr = mgr;
   }
 

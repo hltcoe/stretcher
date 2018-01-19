@@ -5,9 +5,7 @@
  */
 package edu.jhu.hlt.stretcher.manager;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
 
 import edu.jhu.hlt.stretcher.Server;
 import edu.jhu.hlt.stretcher.file.FileUtility;
@@ -42,12 +39,9 @@ import edu.jhu.hlt.stretcher.util.DependencyLoader;
 public class ManagerFactory {
   private static Logger LOGGER = LoggerFactory.getLogger(ManagerFactory.class);
 
-  private static final String CONFIG = "stretcher.conf";
-
   private static FormatDetector detector;
 
-  public static Manager create(Server.Opts opts) throws IOException {
-    Config config = loadConfig();
+  public static Manager create(Server.Opts opts, Config config) throws IOException {
     DependencyLoader loader = new DependencyLoader(config);
     CachingSource source = prepareSource(createSource(opts), loader);
     Store store = prepareStore(createStore(opts), source, loader);
@@ -95,19 +89,6 @@ public class ManagerFactory {
 
   private static Store prepareStore(Store store, CachingSource source, DependencyLoader loader) {
     return new CombiningStore(new CacheUpdatingStore(store, source), loader.getCombiner());
-  }
-
-  private static Config loadConfig() {
-    Config defaultConfig = ConfigFactory.load();
-    Config config = defaultConfig;
-    ClassLoader classLoader = ManagerFactory.class.getClassLoader();
-    URL url = classLoader.getResource(CONFIG);
-    if (url != null) {
-      File configFile = new File(url.getFile());
-      LOGGER.info("Loading configuration from " + configFile.getAbsolutePath());
-      config = ConfigFactory.parseFile(configFile).withFallback(defaultConfig);
-    }
-    return config;
   }
 
 }

@@ -14,11 +14,13 @@ import org.slf4j.LoggerFactory;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
+import com.typesafe.config.Config;
 
 import edu.jhu.hlt.concrete.services.fetch.FetchServiceWrapper;
 import edu.jhu.hlt.concrete.services.store.StoreServiceWrapper;
 import edu.jhu.hlt.stretcher.manager.Manager;
 import edu.jhu.hlt.stretcher.manager.ManagerFactory;
+import edu.jhu.hlt.stretcher.util.ConfigLoader;
 
 public class Server {
   private static Logger LOGGER = LoggerFactory.getLogger(Server.class);
@@ -34,9 +36,10 @@ public class Server {
   public Server(Opts opts) throws IOException {
     this.fetchPort = opts.fetchPort;
     this.storePort = opts.storePort;
-    Manager manager = ManagerFactory.create(opts);
-    this.fetchImpl = new FetchImpl(manager);
-    this.storeImpl = new StoreImpl(manager);
+    Config config = ConfigLoader.load();
+    Manager manager = ManagerFactory.create(opts, config);
+    this.fetchImpl = new FetchImpl(manager, config);
+    this.storeImpl = new StoreImpl(manager, config);
   }
 
   public void start() throws TException {
